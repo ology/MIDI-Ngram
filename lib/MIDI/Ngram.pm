@@ -196,18 +196,6 @@ has single => (
     default => sub { 0 },
 );
 
-=head2 dump
-
-Boolean.  Call the MIDI::Opus "dump" method and exit.  Default: 0
-
-=cut
-
-has dump => (
-    is      => 'ro',
-    isa     => sub { croak 'Invalid Boolean' unless defined $_[0] && ( $_[0] == 1 || $_[0] == 0 ) },
-    default => sub { 0 },
-);
-
 =head2 verbose
 
 Boolean.  Output progress print statements.
