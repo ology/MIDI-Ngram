@@ -133,7 +133,7 @@ has pause => (
 =head2 loop
 
 The number of times to choose a weighted phrase.  * Only works with the
-B<weight> option.  Defaut: 4
+B<weight> option.  Default: 4
 
 =cut
 
@@ -145,7 +145,7 @@ has loop => (
 
 =head2 weight
 
-Boolean.  Play phrases by their ngram repetition occurance.  Default: 0
+Boolean.  Play phrases by their ngram repetition occurrence.  Default: 0
 
 =cut
 
@@ -182,7 +182,7 @@ has shuffle_phrases => (
 
 =head2 single
 
-Boolean.  Allow single occurance ngrams.  Default: 0
+Boolean.  Allow single occurrence ngrams.  Default: 0
 
 =cut
 
