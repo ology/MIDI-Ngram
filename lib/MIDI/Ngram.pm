@@ -16,10 +16,6 @@ use MIDI::Simple;
 use Music::Note;
 use Music::Tempo;
 
-=head1 NAME
-
-MIDI::Ngram - Find the top repeated note phrases of a MIDI file
-
 =head1 SYNOPSIS
 
   use MIDI::Ngram;
