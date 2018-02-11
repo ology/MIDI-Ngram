@@ -47,6 +47,8 @@ $obj = MIDI::Ngram->new(
 
 isa_ok $obj, 'MIDI::Ngram';
 
+is $obj->score, undef, 'score undef';
+
 $obj->process;
 
 $expected = {
@@ -67,5 +69,7 @@ $expected = {
 is_deeply $obj->notes, $expected, 'processed weighted notes';
 
 $obj->populate;
+
+isa_ok $obj->score, 'MIDI::Simple';
 
 done_testing();
