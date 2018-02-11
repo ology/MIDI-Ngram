@@ -20,10 +20,11 @@ use Music::Tempo;
 
   use MIDI::Ngram;
   my $mng = MIDI::Ngram->new(
-    file    => 'eg/twinkle_twinkle.mid',
-    size    => 3,
-    patches => [qw( 68 69 70 71 72 73 )],
-    verbose => 1,
+    file      => 'eg/twinkle_twinkle.mid',
+    size      => 3,
+    patches   => [qw( 68 69 70 71 72 73 )],
+    randpatch => 1,
+    verbose   => 1,
   );
   $mng->process;
   $mng->populate;
