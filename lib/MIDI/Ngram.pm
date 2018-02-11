@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.01';
+our $VERSION = '0.0101';
 
 use Moo;
 use strictures 2;
@@ -20,7 +20,7 @@ use Music::Tempo;
 
   use MIDI::Ngram;
   my $mng = MIDI::Ngram->new(
-    file    => 't/twinkle_twinkle.mid',
+    file    => 'eg/twinkle_twinkle.mid',
     size    => 3,
     verbose => 1,
   );
