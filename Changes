@@ -1,6 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Added the note-ngram program to eg/.
+
+0.02 2018-02-11 02:10:46
     - Corrected call to _random_patch().
 
 0.0102 2018-02-11 01:25:02
