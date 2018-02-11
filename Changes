@@ -1,0 +1,5 @@
+Revision history for MIDI-Ngram
+
+{{$NEXT}}
+    - Minted by Dist::Zilla.
+    - Ported functionality from my ngram-play standalone program.
