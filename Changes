@@ -1,5 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Fixed SYNOPSIS typo.
+    - Tested the source attribute.
+
+0.01 2018-02-11 00:30:50
     - Minted by Dist::Zilla.
     - Ported functionality from my ngram-play standalone program.
