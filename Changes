@@ -1,6 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Improved documentation.
+
+0.0101 2018-02-11 01:04:16
     - Fixed SYNOPSIS typo.
     - Tested the source attribute.
 
