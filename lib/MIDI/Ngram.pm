@@ -72,7 +72,7 @@ has max => (
 
 =head2 bpm
 
-Beats per minute.  Default: 20
+Beats per minute.  Default: 100
 
 =cut
 
