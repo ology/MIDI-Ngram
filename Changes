@@ -1,7 +1,10 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+
+0.03 2018-02-11 10:54:23
     - Added the note-ngram program to eg/.
+    - Modularized 'isa' routines.
 
 0.02 2018-02-11 02:10:46
     - Corrected call to _random_patch().
