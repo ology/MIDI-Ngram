@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.0102';
+our $VERSION = '0.02';
 
 use Moo;
 use strictures 2;
@@ -365,7 +365,7 @@ sub populate {
         for my $channel ( sort { $a <=> $b } keys %{ $self->notes } ) {
             # Create a function that adds notes to the score
             my $func = sub {
-                my $patch = $self->randpatch ? _random_patch() : 0;
+                my $patch = $self->randpatch ? $self->_random_patch() : 0;
 
                 _set_chan_patch( $self->score, $channel, $patch );
 
@@ -428,7 +428,7 @@ sub populate {
 
             # Create a function that adds our bucket of notes to the score
             my $func = sub {
-                my $patch = $self->randpatch ? _random_patch() : 0;
+                my $patch = $self->randpatch ? $self->_random_patch() : 0;
 
                 _set_chan_patch( $self->score, $channel, $patch);
 
