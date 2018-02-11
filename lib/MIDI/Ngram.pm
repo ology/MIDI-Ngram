@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.0101';
+our $VERSION = '0.0102';
 
 use Moo;
 use strictures 2;
@@ -22,6 +22,7 @@ use Music::Tempo;
   my $mng = MIDI::Ngram->new(
     file    => 'eg/twinkle_twinkle.mid',
     size    => 3,
+    patches => [qw( 68 69 70 71 72 73 )],
     verbose => 1,
   );
   $mng->process;
@@ -170,7 +171,7 @@ has randpatch => (
 
 =head2 shuffle_phrases
 
-Boolean.  Shuffle the phrases before playing them.  Default: 0
+Boolean.  Shuffle the non-weighted phrases before playing them.  Default: 0
 
 =cut
 
