@@ -533,4 +533,8 @@ L<List::Util::WeightedChoice>
 
 L<Music::Note>
 
+L<MIDI::Simple>
+
+L<Music::Tempo>
+
 =cut
