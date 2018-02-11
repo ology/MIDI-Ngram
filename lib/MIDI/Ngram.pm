@@ -56,7 +56,7 @@ Ngram phrase size.  Default: 2
 
 has size => (
     is      => 'ro',
-    isa     => \&invalid_integer,
+    isa     => \&_invalid_integer,
     default => sub { 2 },
 );
 
@@ -68,7 +68,7 @@ The maximum number of phrases to play.  Default: 10
 
 has max => (
     is      => 'ro',
-    isa     => \&invalid_integer,
+    isa     => \&_invalid_integer,
     default => sub { 10 },
 );
 
@@ -80,7 +80,7 @@ Beats per minute.  Default: 100
 
 has bpm => (
     is      => 'ro',
-    isa     => \&invalid_integer,
+    isa     => \&_invalid_integer,
     default => sub { 100 },
 );
 
@@ -92,7 +92,7 @@ The note durations to choose from (at random).  Default: [qn tqn]
 
 has durations => (
     is      => 'ro',
-    isa     => \&invalid_list,
+    isa     => \&_invalid_list,
     default => sub { [qw( qn tqn )] },
 );
 
@@ -105,7 +105,7 @@ Otherwise 0 (piano) is used.  Default: [0 .. 127]
 
 has patches => (
     is      => 'ro',
-    isa     => \&invalid_list,
+    isa     => \&_invalid_list,
     default => sub { [ 0 .. 127 ] },
 );
 
@@ -141,7 +141,7 @@ B<weight> option.  Default: 4
 
 has loop => (
     is      => 'ro',
-    isa     => \&invalid_integer,
+    isa     => \&_invalid_integer,
     default => sub { 10 },
 );
 
@@ -153,7 +153,7 @@ Boolean.  Play phrases by their ngram repetition occurrence.  Default: 0
 
 has weight => (
     is      => 'ro',
-    isa     => \&invalid_boolean,
+    isa     => \&_invalid_boolean,
     default => sub { 0 },
 );
 
@@ -166,7 +166,7 @@ Default: 0 (piano)
 
 has randpatch => (
     is      => 'ro',
-    isa     => \&invalid_boolean,
+    isa     => \&_invalid_boolean,
     default => sub { 0 },
 );
 
@@ -178,7 +178,7 @@ Boolean.  Shuffle the non-weighted phrases before playing them.  Default: 0
 
 has shuffle_phrases => (
     is      => 'ro',
-    isa     => \&invalid_boolean,
+    isa     => \&_invalid_boolean,
     default => sub { 0 },
 );
 
@@ -190,7 +190,7 @@ Boolean.  Allow single occurrence ngrams.  Default: 0
 
 has single => (
     is      => 'ro',
-    isa     => \&invalid_boolean,
+    isa     => \&_invalid_boolean,
     default => sub { 0 },
 );
 
@@ -202,7 +202,7 @@ Boolean.  Output progress print statements.
 
 has verbose => (
     is      => 'ro',
-    isa     => \&invalid_boolean,
+    isa     => \&_invalid_boolean,
     default => sub { 0 },
 );
 
@@ -516,17 +516,17 @@ sub _set_chan_patch {
     $score->noop( 'c' . $channel );
 }
 
-sub invalid_integer {
+sub _invalid_integer {
     croak 'Invalid integer'
         unless $_[0] && $_[0] =~ /^\d+$/ && $_[0] > 0;
 }
 
-sub invalid_list {
+sub _invalid_list {
     croak 'Invalid list'
         unless ref $_[0] eq 'ARRAY';
 }
 
-sub invalid_boolean {
+sub _invalid_boolean {
     croak 'Invalid Boolean'
         unless defined $_[0] && ( $_[0] == 1 || $_[0] == 0 );
 }
