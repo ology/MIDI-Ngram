@@ -68,17 +68,18 @@ my $mng = MIDI::Ngram->new(
     weight          => $opts{weight},
     shuffle_phrases => $opts{shuf},
     single          => $opts{single},
-    verbose         => 1,
     patches         => \@patches,
 );
 
-$mng->process;
+my $analysis = $mng->process;
+print $analysis;
 
 if ( $opts{dump} ) {
       $mng->opus->dump( { dump_tracks => 1 } );
       exit;
 }
 
-$mng->populate;
+my $playback = $mng->populate;
+print $playback;
 
 $mng->write;

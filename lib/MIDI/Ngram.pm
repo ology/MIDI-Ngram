@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Moo;
 use strictures 2;
@@ -24,10 +24,9 @@ use Music::Tempo;
     size      => 3,
     patches   => [qw( 68 69 70 71 72 73 )],
     randpatch => 1,
-    verbose   => 1,
   );
-  $mng->process;
-  $mng->populate;
+  my $analysis = $mng->process;
+  my $playback = $mng->populate;
   $mng->write;
 
 =head1 DESCRIPTION
@@ -194,18 +193,6 @@ has single => (
     default => sub { 0 },
 );
 
-=head2 verbose
-
-Boolean.  Output progress print statements.
-
-=cut
-
-has verbose => (
-    is      => 'ro',
-    isa     => \&_invalid_boolean,
-    default => sub { 0 },
-);
-
 =head2 opus
 
 The MIDI opus object.  Constructed at runtime.  Constructor argument if given
@@ -262,9 +249,9 @@ Create a new C<MIDI::Ngram> object.
 
 =head2 process()
 
-  $mng->process;
+  my $analysis = $mng->process;
 
-Find all ngram phrases.
+Find all ngram phrases and return the note analysis.
 
 =cut
 
@@ -274,8 +261,7 @@ sub process {
     # Counter for the tracks seen
     my $i = 0;
 
-    print "Ngram analysis:\n\tNum\tReps\tPhrase\n"
-        if $self->verbose;
+    my $analysis = "Ngram analysis:\n\tNum\tReps\tPhrase\n";
 
     # Handle each track...
     for my $t ( $self->opus->tracks ) {
@@ -288,8 +274,7 @@ sub process {
         next unless @events && defined $track_channel;
 
         $i++;
-        print "$t $i. channel: $track_channel\n"
-            if $self->verbose;
+        $analysis .= "$t $i. channel: $track_channel\n";
 
         # Declare the notes to inspect
         my $text = '';
@@ -328,8 +313,7 @@ sub process {
             # Convert MIDI numbers to named notes.
             my $text = _convert($num);
 
-            printf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text
-                if $self->verbose;
+            $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text;
 
             # If we are playing by weight, save the number of times the phrase is repeated
             if ( $self->weight ) {
@@ -341,13 +325,15 @@ sub process {
             }
         }
     }
+
+    return $analysis;
 }
 
 =head2 populate()
 
-  $mng->populate;
+  my $playback = $mng->populate;
 
-Add notes to the MIDI score.
+Add notes to the MIDI score and return the playback notes.
 
 =cut
 
@@ -357,10 +343,10 @@ sub populate {
     $self->score( _setup_midi( bpm => $self->bpm ) );
 
     my @phrases;
+    my $playback;
 
     if ( $self->weight ) {
-        print "Weighted playback:\n\tLoop\tChan\tPhrase\n"
-            if $self->verbose;
+        $playback = "Weighted playback:\n\tLoop\tChan\tPhrase\n";
 
         for my $channel ( sort { $a <=> $b } keys %{ $self->notes } ) {
             # Create a function that adds notes to the score
@@ -378,8 +364,7 @@ sub populate {
                     # Convert MIDI numbers to named notes.
                     my $text = _convert($choice);
 
-                    print "\t$n\t$channel\t$choice $text\n"
-                        if $self->verbose;
+                    $playback .= "\t$n\t$channel\t$choice $text\n";
 
                     # Add each chosen note to the score
                     for my $note ( split /\s+/, $choice ) {
@@ -397,8 +382,7 @@ sub populate {
     }
     else {
         my $type = $self->shuffle_phrases ? 'Shuffled' : 'Ordered';
-        print "$type playback:\n\tN\tChan\tPhrase\n"
-            if $self->verbose;
+        $playback = "$type playback:\n\tN\tChan\tPhrase\n";
 
         my $n = 0;
 
@@ -417,8 +401,7 @@ sub populate {
                 # Convert MIDI numbers to named notes.
                 my $text = _convert($phrase);
 
-                print "\t$n\t$channel\t$phrase $text\n"
-                    if $self->verbose;
+                $playback .= "\t$n\t$channel\t$phrase $text\n";
 
                 my @phrase = split /\s/, $phrase;
                 push @all, @phrase;
@@ -448,6 +431,8 @@ sub populate {
     }
 
     $self->score->synch(@phrases);
+
+    return $playback;
 }
 
 =head2 write()
