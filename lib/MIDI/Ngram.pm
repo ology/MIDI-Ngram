@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.05';
+our $VERSION = '0.0501';
 
 use Moo;
 use strictures 2;
@@ -274,7 +274,7 @@ sub process {
         next unless @events && defined $track_channel;
 
         $i++;
-        $analysis .= "$t $i. channel: $track_channel\n";
+        $analysis .= "Track $i. Channel: $track_channel\n";
 
         # Declare the notes to inspect
         my $text = '';
