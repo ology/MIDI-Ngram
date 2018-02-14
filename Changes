@@ -1,7 +1,10 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+
+0.05 2018-02-13 21:47:45
     - Used a single data structure for the ngram list.
+    - Fixed the ordering of ngrams for non-shuffled output.
 
 0.04 2018-02-12 20:03:37
     - Replaced inline printing if --verbose with a returned string of results.
