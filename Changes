@@ -1,6 +1,7 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Stop displaying the track reference address in the analysis.
 
 0.05 2018-02-13 21:47:45
     - Used a single data structure for the ngram list.
