@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use Moo;
 use strictures 2;
@@ -315,14 +315,8 @@ sub process {
 
             $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text;
 
-            # If we are playing by weight, save the number of times the phrase is repeated
-            if ( $self->weight ) {
-                $self->notes->{$track_channel}{$num} = $phrase->{$p};
-            }
-            # Otherwise, just save the phrase itself
-            else {
-                push @{ $self->notes->{$track_channel} }, $num;
-            }
+            # Save the number of times the phrase is repeated
+            $self->notes->{$track_channel}{$num} = $phrase->{$p};
         }
     }
 
@@ -387,12 +381,15 @@ sub populate {
         my $n = 0;
 
         for my $channel ( keys %{ $self->notes } ) {
-            my @all;
+            my $notes = $self->notes->{$channel};
 
             # Shuffle the phrases if requested
             my @track_notes = $self->shuffle_phrases
-                ? shuffle @{ $self->notes->{$channel} }
-                : @{ $self->notes->{$channel} };
+                ? shuffle keys %$notes
+                : sort { $notes->{$b} <=> $notes->{$a} } keys %$notes;
+
+            # Temporary list of all the phrase notes
+            my @all;
 
             # Add the notes to a bucket
             for my $phrase ( @track_notes ) {
