@@ -79,7 +79,9 @@ if ( $opts{dump} ) {
       exit;
 }
 
-my $playback = $mng->populate;
-print $playback;
+if ( $opts{out} ) {
+    my $playback = $mng->populate;
+    print $playback;
 
-$mng->write;
+    $mng->write;
+}
