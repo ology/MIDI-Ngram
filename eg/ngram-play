@@ -5,6 +5,7 @@
 use strict;
 use warnings;
 
+use lib '/Users/gene/sandbox/MIDI-Ngram/lib';
 use MIDI::Ngram;
 use Getopt::Long;
 
@@ -16,6 +17,7 @@ my %opts = (
     dura   => 'qn tqn', # Note durations
     out    => "$0.mid", # Output MIDI file
     pause  => '',       # Insert a rest after each phrase
+    analyze => '',      # Analyze all channels
     loop   => 4,        # Times to choose a weighted phrase
     weight => 0,        # Use weighted counts to play
     ranp   => 0,        # Random patch instead of all piano
@@ -33,6 +35,7 @@ GetOptions( \%opts,
     'dura=s',
     'out=s',
     'pause=s',
+    'analyze=s',
     'loop=i',
     'weight',
     'ranp',
@@ -44,7 +47,9 @@ GetOptions( \%opts,
 die "Invalid file: $!"
     unless $opts{file} && -e $opts{file};
 
-$opts{dura} = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ];
+# Turn string lists into arrayrefs
+$opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ];
+$opts{analyze} = [ split /(?:\s+|\s*,\s*)/, $opts{analyze} ];
 
 # General MIDI patches that are audible and aren't horrible
 my @patches = qw(
@@ -63,6 +68,7 @@ my $mng = MIDI::Ngram->new(
     durations       => $opts{dura},
     out_file        => $opts{out},
     pause           => $opts{pause},
+    analyze         => $opts{analyze},
     randpatch       => $opts{ranp},
     loop            => $opts{loop},
     weight          => $opts{weight},

@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.0501';
+our $VERSION = '0.06';
 
 use Moo;
 use strictures 2;
@@ -131,6 +131,17 @@ has pause => (
     default => sub { '' },
 );
 
+=head2 analyze
+
+ArrayRef of the channels to analyze.  If not given, all channels are analyzed.
+
+=cut
+
+has analyze => (
+    is  => 'ro',
+    isa => \&_invalid_list,
+);
+
 =head2 loop
 
 The number of times to choose a weighted phrase.  * Only works with the
@@ -250,10 +261,15 @@ sub process {
         # Collect the note events for each track except channel 9 (percussion)
         my @events = grep { $_->[0] eq 'note_on' && $_->[2] != 9 && $_->[4] != 0 } $t->events;
 
+        # XXX Assume that there is one channel per track
         my $track_channel = $events[0][2];
 
         # Skip if there are no events and no channel
         next unless @events && defined $track_channel;
+
+        # Skip if this is not a channel to analyze
+        next if keys @{ $self->analyze }
+            && !grep { $_ == $track_channel } @{ $self->analyze };
 
         $i++;
         $analysis .= "Track $i. Channel: $track_channel\n";
