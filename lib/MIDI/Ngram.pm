@@ -193,26 +193,6 @@ has single => (
     default => sub { 0 },
 );
 
-=head2 opus
-
-The MIDI opus object.  Constructed at runtime.  Constructor argument if given
-will be ignored.
-
-=cut
-
-has opus => (
-    is       => 'ro',
-    init_arg => undef,
-    lazy     => 1,
-    builder  => 1,
-);
-
-sub _build_opus {
-    my ($self) = @_;
-    my $opus = MIDI::Opus->new({ from_file => $self->file });
-    return $opus;
-}
-
 =head2 score
 
 The MIDI score object.  Constructed at runtime.  Constructor argument if given
@@ -261,10 +241,12 @@ sub process {
     # Counter for the tracks seen
     my $i = 0;
 
+    my $opus = MIDI::Opus->new({ from_file => $self->file });
+
     my $analysis = "Ngram analysis:\n\tNum\tReps\tPhrase\n";
 
     # Handle each track...
-    for my $t ( $self->opus->tracks ) {
+    for my $t ( $opus->tracks ) {
         # Collect the note events for each track except channel 9 (percussion)
         my @events = grep { $_->[0] eq 'note_on' && $_->[2] != 9 && $_->[4] != 0 } $t->events;
 
