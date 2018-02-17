@@ -5,7 +5,6 @@
 use strict;
 use warnings;
 
-use lib '/Users/gene/sandbox/MIDI-Ngram/lib';
 use MIDI::Ngram;
 use Getopt::Long;
 
