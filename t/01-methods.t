@@ -8,16 +8,16 @@ my $obj;
 
 throws_ok {
     $obj = MIDI::Ngram->new
-} qr/Missing required arguments: file/, 'file required';
+} qr/Missing required arguments: in_file/, 'file required';
 
 throws_ok {
-    $obj = MIDI::Ngram->new( file => 'foo' )
+    $obj = MIDI::Ngram->new( in_file => 'foo' )
 } qr/File foo does not exist!/, 'bogus file';
 
 $obj = MIDI::Ngram->new(
-    file   => 'eg/twinkle_twinkle.mid',
-    size   => 3,
-    weight => 1,
+    in_file    => 'eg/twinkle_twinkle.mid',
+    ngram_size => 3,
+    weight     => 1,
 );
 
 isa_ok $obj, 'MIDI::Ngram';
