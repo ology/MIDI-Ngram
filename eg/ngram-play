@@ -22,7 +22,6 @@ my %opts = (
     ranp    => 0,        # Random patch instead of all piano
     shuf    => 0,        # Shuffle phrases
     single  => 0,        # Allow phrases seen only once
-    dump    => 0,        # Dump out MIDI info and exit
 );
 GetOptions( \%opts, 
     'help|?',
@@ -40,7 +39,6 @@ GetOptions( \%opts,
     'ranp',
     'shuf',
     'single',
-    'dump',
 ) or die 'Failed GetOptions';
 
 die "Invalid file: $!"
@@ -78,11 +76,6 @@ my $mng = MIDI::Ngram->new(
 
 my $analysis = $mng->process;
 print $analysis;
-
-if ( $opts{dump} ) {
-      $mng->opus->dump( { dump_tracks => 1 } );
-      exit;
-}
 
 if ( $opts{out} ) {
     my $playback = $mng->populate;
