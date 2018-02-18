@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use Moo;
 use strictures 2;
@@ -20,10 +20,10 @@ use Music::Tempo;
 
   use MIDI::Ngram;
   my $mng = MIDI::Ngram->new(
-    file      => 'eg/twinkle_twinkle.mid',
-    size      => 3,
-    patches   => [qw( 68 69 70 71 72 73 )],
-    randpatch => 1,
+    in_file      => 'eg/twinkle_twinkle.mid',
+    ngram_size   => 3,
+    patches      => [qw( 68 69 70 71 72 73 )],
+    random_patch => 1,
   );
   my $analysis = $mng->process;
   my $playback = $mng->populate;
@@ -35,37 +35,37 @@ C<MIDI::Ngram> parses a given MIDI file and finds the top repeated note phrases.
 
 =head1 ATTRIBUTES
 
-=head2 file
+=head2 in_file
 
 Required.  The MIDI file to process.
 
 =cut
 
-has file => (
+has in_file => (
     is       => 'ro',
     isa      => sub { croak "File $_[0] does not exist!" unless -e $_[0] },
     required => 1,
 );
 
-=head2 size
+=head2 ngram_size
 
 Ngram phrase size.  Default: 2
 
 =cut
 
-has size => (
+has ngram_size => (
     is      => 'ro',
     isa     => \&_invalid_integer,
     default => sub { 2 },
 );
 
-=head2 max
+=head2 max_phrases
 
 The maximum number of phrases to play.  Default: 10
 
 =cut
 
-has max => (
+has max_phrases => (
     is      => 'ro',
     isa     => \&_invalid_integer,
     default => sub { 10 },
@@ -97,7 +97,7 @@ has durations => (
 
 =head2 patches
 
-The patches to choose from (at random) if given the B<randpatch> option.
+The patches to choose from (at random) if given the B<random_patch> option.
 Otherwise 0 (piano) is used.  Default: [0 .. 127]
 
 =cut
@@ -119,13 +119,13 @@ has out_file => (
     default => sub { 'midi-ngram.mid' },
 );
 
-=head2 pause
+=head2 pause_duration
 
 Insert a rest of the given duration after each phrase.  Default: '' (no resting)
 
 =cut
 
-has pause => (
+has pause_duration => (
     is      => 'ro',
     isa     => sub { croak 'Invalid duration' unless $_[0] eq '' || $_[0] =~ /^[a-z]+$/ },
     default => sub { '' },
@@ -167,14 +167,14 @@ has weight => (
     default => sub { 0 },
 );
 
-=head2 randpatch
+=head2 random_patch
 
 Boolean.  Choose a random patch from B<patches> for each channel.
 Default: 0 (piano)
 
 =cut
 
-has randpatch => (
+has random_patch => (
     is      => 'ro',
     isa     => \&_invalid_boolean,
     default => sub { 0 },
@@ -192,13 +192,13 @@ has shuffle_phrases => (
     default => sub { 0 },
 );
 
-=head2 single
+=head2 single_phrases
 
 Boolean.  Allow single occurrence ngrams.  Default: 0
 
 =cut
 
-has single => (
+has single_phrases => (
     is      => 'ro',
     isa     => \&_invalid_boolean,
     default => sub { 0 },
@@ -264,7 +264,7 @@ sub process {
     # Counter for the tracks seen
     my $i = 0;
 
-    my $opus = MIDI::Opus->new({ from_file => $self->file });
+    my $opus = MIDI::Opus->new({ from_file => $self->in_file });
 
     my $analysis = "Ngram analysis:\n\tNum\tReps\tPhrase\n";
 
@@ -298,7 +298,7 @@ sub process {
 
         # Parse the note text into ngrams
         my $ngram  = Lingua::EN::Ngram->new( text => $text );
-        my $phrase = $ngram->ngram( $self->size );
+        my $phrase = $ngram->ngram( $self->ngram_size );
 
         # Counter for the ngrams seen
         my $j = 0;
@@ -306,16 +306,16 @@ sub process {
         # Display the ngrams in order of their repetition amount
         for my $p ( sort { $phrase->{$b} <=> $phrase->{$a} || $a cmp $b } keys %$phrase ) {
             # Skip single occurance phrases if requested
-            next if !$self->single && $phrase->{$p} == 1;
+            next if !$self->single_phrases && $phrase->{$p} == 1;
 
             # Don't allow phrases that are not the right size
             my @items = grep { $_ } split /\s+/, $p;
-            next unless @items == $self->size;
+            next unless @items == $self->ngram_size;
 
             $j++;
 
             # End if we are past the maximum
-            last if $self->max > 0 && $j > $self->max;
+            last if $self->max_phrases > 0 && $j > $self->max_phrases;
 
             # Transliterate our letter code back to MIDI note numbers
             ( my $num = $p ) =~ tr/a-j/0-9/;
@@ -355,7 +355,7 @@ sub populate {
         for my $channel ( sort { $a <=> $b } keys %{ $self->notes } ) {
             # Create a function that adds notes to the score
             my $func = sub {
-                my $patch = $self->randpatch ? $self->_random_patch() : 0;
+                my $patch = $self->random_patch ? $self->_random_patch() : 0;
 
                 _set_chan_patch( $self->score, $channel, $patch );
 
@@ -376,8 +376,8 @@ sub populate {
                         $self->score->n( $duration, $note );
                     }
 
-                    $self->score->r( $self->pause )
-                        if $self->pause;
+                    $self->score->r( $self->pause_duration )
+                        if $self->pause_duration;
                 }
             };
 
@@ -413,18 +413,18 @@ sub populate {
                 my @phrase = split /\s/, $phrase;
                 push @all, @phrase;
                 push @all, 'r'
-                    if $self->pause;
+                    if $self->pause_duration;
             }
 
             # Create a function that adds our bucket of notes to the score
             my $func = sub {
-                my $patch = $self->randpatch ? $self->_random_patch() : 0;
+                my $patch = $self->random_patch ? $self->_random_patch() : 0;
 
                 _set_chan_patch( $self->score, $channel, $patch);
 
                 for my $note ( @all ) {
                     if ( $note eq 'r' ) {
-                        $self->score->r( $self->pause );
+                        $self->score->r( $self->pause_duration );
                     }
                     else {
                         my $duration = $self->durations->[ int rand @{ $self->durations } ];

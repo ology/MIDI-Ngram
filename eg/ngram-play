@@ -60,19 +60,19 @@ my @patches = qw(
 );
 
 my $mng = MIDI::Ngram->new(
-    file            => $opts{file},
-    size            => $opts{size},
-    max             => $opts{max},
+    in_file         => $opts{file},
+    ngram_size      => $opts{size},
+    max_phrases     => $opts{max},
     bpm             => $opts{bpm},
     durations       => $opts{dura},
     out_file        => $opts{out},
-    pause           => $opts{pause},
+    pause_duration  => $opts{pause},
     analyze         => $opts{analyze},
-    randpatch       => $opts{ranp},
+    random_patch    => $opts{ranp},
     loop            => $opts{loop},
     weight          => $opts{weight},
     shuffle_phrases => $opts{shuf},
-    single          => $opts{single},
+    single_phrases  => $opts{single},
     one_channel     => $opts{one},
     patches         => \@patches,
 );

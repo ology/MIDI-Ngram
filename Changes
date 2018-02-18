@@ -1,6 +1,11 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Allow alanysis to accumulate phrases into a sinlge list.
+    - Renamed a number of attributes to improve meaning.
+    - Improved the eg script code again.
+
+0.06 2018-02-17 16:08:15
     - Improved the eg/ngram-play code.
     - Replaced the opus attribute with a single-use variable.
     - Allow a user defined list of channels to analyze.
