@@ -268,7 +268,7 @@ sub process {
         next unless @events && defined $track_channel;
 
         # Skip if this is not a channel to analyze
-        next if keys @{ $self->analyze }
+        next if $self->analyze && keys @{ $self->analyze }
             && !grep { $_ == $track_channel } @{ $self->analyze };
 
         $i++;
