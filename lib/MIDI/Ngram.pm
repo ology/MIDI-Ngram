@@ -204,6 +204,18 @@ has single => (
     default => sub { 0 },
 );
 
+=head2 one_channel
+
+Boolean.  Accumulate phrases into a single list.  Default: 0
+
+=cut
+
+has one_channel => (
+    is      => 'ro',
+    isa     => \&_invalid_boolean,
+    default => sub { 0 },
+);
+
 =head2 score
 
 The MIDI score object.  Constructed at runtime.  Constructor argument if given
@@ -262,7 +274,7 @@ sub process {
         my @events = grep { $_->[0] eq 'note_on' && $_->[2] != 9 && $_->[4] != 0 } $t->events;
 
         # XXX Assume that there is one channel per track
-        my $track_channel = $events[0][2];
+        my $track_channel = $self->one_channel ? 0 : $events[0][2];
 
         # Skip if there are no events and no channel
         next unless @events && defined $track_channel;
