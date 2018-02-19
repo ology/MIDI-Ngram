@@ -230,6 +230,19 @@ has gestalt => (
     default => sub { 0 },
 );
 
+=head2 score
+
+The MIDI score object.  Constructed at runtime.  Constructor argument if given
+will be ignored.
+
+=cut
+
+has score => (
+    is       => 'rw',
+    init_arg => undef,
+    lazy     => 1,
+);
+
 =head2 notes
 
 The bucket of ngrams.  Constructed at runtime.  Constructor argument if given
