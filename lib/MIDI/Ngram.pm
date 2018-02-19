@@ -343,20 +343,14 @@ sub process {
             $self->notes->{$track_channel}{$num} = $phrase->{$p};
         }
 
-        $analysis .= $self->gestalt_analysis( \@events )
+        $analysis .= $self->_gestalt_analysis( \@events )
             if $self->gestalt;
     }
 
     return $analysis;
 }
 
-=head2 gestalt_analysis)
-
-Summarize the bounds of the track events.
-
-=cut
-
-sub gestalt_analysis {
+sub _gestalt_analysis {
     my ( $self, $events ) = @_;
 
     my $score_r = MIDI::Score::events_r_to_score_r( $events );
