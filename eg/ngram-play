@@ -23,6 +23,7 @@ my %opts = (
     shuf    => 0,        # Shuffle phrases
     single  => 0,        # Allow phrases seen only once
     one     => 0,        # Analyze phrases into one list
+    gestalt => 0,        # Show pitch bounds
 );
 GetOptions( \%opts, 
     'help|?',
@@ -41,6 +42,7 @@ GetOptions( \%opts,
     'shuf',
     'single',
     'one',
+    'gestalt',
 ) or die 'Failed GetOptions';
 
 die "Invalid file: $!"
@@ -74,6 +76,7 @@ my $mng = MIDI::Ngram->new(
     shuffle_phrases => $opts{shuf},
     single_phrases  => $opts{single},
     one_channel     => $opts{one},
+    gestalt         => $opts{gestalt},
     patches         => \@patches,
 );
 

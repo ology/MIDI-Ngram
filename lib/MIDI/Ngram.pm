@@ -13,6 +13,7 @@ use Lingua::EN::Ngram;
 use List::Util qw( shuffle );
 use List::Util::WeightedChoice qw( choose_weighted );
 use MIDI::Simple;
+use Music::Gestalt;
 use Music::Note;
 use Music::Tempo;
 
@@ -216,17 +217,16 @@ has one_channel => (
     default => sub { 0 },
 );
 
-=head2 score
+=head2 gestalt
 
-The MIDI score object.  Constructed at runtime.  Constructor argument if given
-will be ignored.
+Boolean.  Include pitch range in the analysis.
 
 =cut
 
-has score => (
-    is       => 'rw',
-    init_arg => undef,
-    lazy     => 1,
+has gestalt => (
+    is      => 'ro',
+    isa     => \&_invalid_boolean,
+    default => sub { 0 },
 );
 
 =head2 notes
@@ -328,9 +328,39 @@ sub process {
             # Save the number of times the phrase is repeated
             $self->notes->{$track_channel}{$num} = $phrase->{$p};
         }
+
+        $analysis .= $self->gestalt_analysis( \@events )
+            if $self->gestalt;
     }
 
     return $analysis;
+}
+
+=head2 gestalt_analysis)
+
+Summarize the bounds of the track events.
+
+=cut
+
+sub gestalt_analysis {
+    my ( $self, $events ) = @_;
+
+    my $score_r = MIDI::Score::events_r_to_score_r( $events );
+    $score_r = MIDI::Score::sort_score_r($score_r);
+
+    my $g = Music::Gestalt->new( score => $score_r );
+
+    my $note = Music::Note->new( $g->PitchLowest, 'midinum' );
+    my $low  = $note->format('midi');
+    $note    = Music::Note->new( $g->PitchHighest, 'midinum' );
+    my $high = $note->format('midi');
+    $note    = Music::Note->new( $g->PitchMiddle, 'midinum' );
+    my $mid  = $note->format('midi');
+
+    my $gestalt = "\tRange: $low to $high\n"
+        . "\tSpan: $mid +/- " . $g->PitchRange . "\n";
+
+    return $gestalt;
 }
 
 =head2 populate()

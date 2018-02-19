@@ -1,7 +1,7 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
-    - 
+    - Include pitch gestalt in the analysis.
 
 0.07 2018-02-18 15:58:10
     - Allow analysis to accumulate phrases into a single list.
