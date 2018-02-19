@@ -280,7 +280,7 @@ sub process {
 
     my $opus = MIDI::Opus->new({ from_file => $self->in_file });
 
-    my $analysis = "Ngram analysis:\n\tNum\tReps\tPhrase\n";
+    my $analysis = "Ngram analysis:\n\tN\tReps\tPhrase\n";
 
     # Handle each track...
     for my $t ( $opus->tracks ) {
