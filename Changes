@@ -1,7 +1,10 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
-    - Allow alanysis to accumulate phrases into a sinlge list.
+    - 
+
+0.07 2018-02-18 15:58:10
+    - Allow analysis to accumulate phrases into a single list.
     - Renamed a number of attributes to improve meaning.
     - Improved the eg script code again.
 
