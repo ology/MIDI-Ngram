@@ -25,6 +25,7 @@ use Music::Tempo;
     ngram_size   => 3,
     patches      => [qw( 68 69 70 71 72 73 )],
     random_patch => 1,
+    gestalt      => 1,
   );
   my $analysis = $mng->process;
   my $playback = $mng->populate;
