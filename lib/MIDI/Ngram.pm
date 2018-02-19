@@ -284,8 +284,12 @@ sub process {
 
     # Handle each track...
     for my $t ( $opus->tracks ) {
-        # Collect the note events for each track except channel 9 (percussion)
-        my @events = grep { $_->[0] eq 'note_on' && $_->[2] != 9 && $_->[4] != 0 } $t->events;
+        # Collect the note events for each track
+        my @events = grep {
+            $_->[0] eq 'note_on'    # Only consider note_on events
+            && $_->[2] != 9         # Avoid the drum channel
+            && $_->[4] != 0         # Ignore events of velocity 0
+        } $t->events;
 
         # XXX Assume that there is one channel per track
         my $track_channel = $self->one_channel ? 0 : $events[0][2];
