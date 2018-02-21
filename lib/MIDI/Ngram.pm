@@ -39,13 +39,13 @@ C<MIDI::Ngram> parses a given MIDI file and finds the top repeated note phrases.
 
 =head2 in_file
 
-Required.  The MIDI file to process.
+Required.  An ArrayRef of MIDI files to process.
 
 =cut
 
 has in_file => (
     is       => 'ro',
-    isa      => sub { croak "File $_[0] does not exist!" unless -e $_[0] },
+    isa      => \&_invalid_list,
     required => 1,
 );
 
@@ -275,12 +275,17 @@ Find all ngram phrases and return the note analysis.
 sub process {
     my ($self) = @_;
 
+    my $analysis;
+
+    my $files = ref $self->in_file eq 'ARRAY' ? $self->in_file : [ $self->in_file ];
+
+    for my $file ( @$files ) {
     # Counter for the tracks seen
     my $i = 0;
 
-    my $opus = MIDI::Opus->new({ from_file => $self->in_file });
+    my $opus = MIDI::Opus->new({ from_file => $file });
 
-    my $analysis = "Ngram analysis:\n\tN\tReps\tPhrase\n";
+    $analysis .= "Ngram analysis of $file:\n\tN\tReps\tPhrase\n";
 
     # Handle each track...
     for my $t ( $opus->tracks ) {
@@ -349,6 +354,7 @@ sub process {
 
         $analysis .= $self->_gestalt_analysis( \@events )
             if $self->gestalt;
+    }
     }
 
     return $analysis;
