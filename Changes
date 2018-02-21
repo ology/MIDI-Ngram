@@ -1,6 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - CRUCIAL FIX: Accumulate ngram phrase counts instead of overwriting.
+
+0.09 2018-02-20 20:41:33
     - Allow processing of multiple files.
 
 0.08 2018-02-18 18:40:28
