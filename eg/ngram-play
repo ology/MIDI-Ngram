@@ -11,7 +11,7 @@ use File::Find::Rule;
 
 my %opts = (
     dir     => undef,    # Directory of MIDI files
-    file    => undef,    # MIDI files to process
+    files   => undef,    # MIDI files to process
     size    => 2,        # ngram size
     max     => 20,       # -1 for all records
     bpm     => 100,      # Beats per minute
@@ -31,7 +31,7 @@ GetOptions( \%opts,
     'help|?',
     'man',
     'dir=s',
-    'file=s',
+    'files=s',
     'size=i',
     'max=i',
     'bpm=i',
@@ -53,7 +53,7 @@ my @files;
     if $opts{dir};
 
 # Turn string lists into arrayrefs
-$opts{file}    = @files ? \@files : [ split /(?:\s+|\s*,\s*)/, $opts{file} ];
+$opts{files}   = @files ? \@files : [ split /(?:\s+|\s*,\s*)/, $opts{files} ];
 $opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ];
 $opts{analyze} = [ split /(?:\s+|\s*,\s*)/, $opts{analyze} ];
 
@@ -67,7 +67,7 @@ my @patches = qw(
 );
 
 my $mng = MIDI::Ngram->new(
-    in_file         => $opts{file},
+    in_file         => $opts{files},
     ngram_size      => $opts{size},
     max_phrases     => $opts{max},
     bpm             => $opts{bpm},
