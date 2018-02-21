@@ -45,10 +45,8 @@ GetOptions( \%opts,
     'gestalt',
 ) or die 'Failed GetOptions';
 
-die "Invalid file: $!"
-    unless $opts{file} && -e $opts{file};
-
 # Turn string lists into arrayrefs
+$opts{file}    = [ split /(?:\s+|\s*,\s*)/, $opts{file} ];
 $opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ];
 $opts{analyze} = [ split /(?:\s+|\s*,\s*)/, $opts{analyze} ];
 
