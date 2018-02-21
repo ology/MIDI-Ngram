@@ -33,7 +33,7 @@ use Music::Tempo;
 
 =head1 DESCRIPTION
 
-C<MIDI::Ngram> parses a given MIDI file and finds the top repeated note phrases.
+C<MIDI::Ngram> parses a given list of MIDI files and finds the top repeated note phrases.
 
 =head1 ATTRIBUTES
 
