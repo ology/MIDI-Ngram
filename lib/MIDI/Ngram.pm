@@ -444,7 +444,7 @@ sub populate {
             # Shuffle the phrases if requested
             my @track_notes = $self->shuffle_phrases
                 ? shuffle keys %$notes
-                : sort { $notes->{$b} <=> $notes->{$a} } keys %$notes;
+                : sort { $notes->{$b} <=> $notes->{$a} || $a cmp $b } keys %$notes;
 
             # Temporary list of all the phrase notes
             my @all;
