@@ -9,7 +9,7 @@ use MIDI::Ngram;
 use Getopt::Long;
 
 my %opts = (
-    file    => undef,    # MIDI file to process
+    file    => undef,    # MIDI files to process
     size    => 2,        # ngram size
     max     => 20,       # -1 for all records
     bpm     => 100,      # Beats per minute
