@@ -1,6 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Allow processing of multiple files.
+
+0.08 2018-02-18 18:40:28
     - Include pitch gestalt in the analysis if requested.
 
 0.07 2018-02-18 15:58:10
