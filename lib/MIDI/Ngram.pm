@@ -349,7 +349,7 @@ sub process {
                 $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text;
 
                 # Save the number of times the phrase is repeated
-                $self->notes->{$track_channel}{$num} = $phrase->{$p};
+                $self->notes->{$track_channel}{$num} += $phrase->{$p};
             }
 
             $analysis .= $self->_gestalt_analysis( \@events )
