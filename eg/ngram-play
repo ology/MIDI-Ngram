@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Play the top repeated note phrases of a MIDI file.
+# Play the top repeated note phrases of a MIDI file or files.
 
 use strict;
 use warnings;
