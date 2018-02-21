@@ -21,7 +21,7 @@ use Music::Tempo;
 
   use MIDI::Ngram;
   my $mng = MIDI::Ngram->new(
-    in_file      => 'eg/twinkle_twinkle.mid',
+    in_file      => [ 'eg/twinkle_twinkle.mid' ],
     ngram_size   => 3,
     patches      => [qw( 68 69 70 71 72 73 )],
     random_patch => 1,
