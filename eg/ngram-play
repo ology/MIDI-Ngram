@@ -7,8 +7,10 @@ use warnings;
 
 use MIDI::Ngram;
 use Getopt::Long;
+use File::Find::Rule;
 
 my %opts = (
+    dir     => undef,    # Directory of MIDI files
     file    => undef,    # MIDI files to process
     size    => 2,        # ngram size
     max     => 20,       # -1 for all records
@@ -28,6 +30,7 @@ my %opts = (
 GetOptions( \%opts, 
     'help|?',
     'man',
+    'dir=s',
     'file=s',
     'size=i',
     'max=i',
@@ -45,8 +48,12 @@ GetOptions( \%opts,
     'gestalt',
 ) or die 'Failed GetOptions';
 
+my @files;
+@files = File::Find::Rule->file()->name('*.mid')->in($opts{dir})
+    if $opts{dir};
+
 # Turn string lists into arrayrefs
-$opts{file}    = [ split /(?:\s+|\s*,\s*)/, $opts{file} ];
+$opts{file}    = @files ? \@files : [ split /(?:\s+|\s*,\s*)/, $opts{file} ];
 $opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ];
 $opts{analyze} = [ split /(?:\s+|\s*,\s*)/, $opts{analyze} ];
 
