@@ -280,81 +280,81 @@ sub process {
     my $files = ref $self->in_file eq 'ARRAY' ? $self->in_file : [ $self->in_file ];
 
     for my $file ( @$files ) {
-    # Counter for the tracks seen
-    my $i = 0;
+        # Counter for the tracks seen
+        my $i = 0;
 
-    my $opus = MIDI::Opus->new({ from_file => $file });
+        my $opus = MIDI::Opus->new({ from_file => $file });
 
-    $analysis .= "Ngram analysis of $file:\n\tN\tReps\tPhrase\n";
+        $analysis .= "Ngram analysis of $file:\n\tN\tReps\tPhrase\n";
 
-    # Handle each track...
-    for my $t ( $opus->tracks ) {
-        # Collect the note events for each track
-        my @events = grep {
-            $_->[0] eq 'note_on'    # Only consider note_on events
-            && $_->[2] != 9         # Avoid the drum channel
-            && $_->[4] != 0         # Ignore events of velocity 0
-        } $t->events;
+        # Handle each track...
+        for my $t ( $opus->tracks ) {
+            # Collect the note events for each track
+            my @events = grep {
+                $_->[0] eq 'note_on'    # Only consider note_on events
+                && $_->[2] != 9         # Avoid the drum channel
+                && $_->[4] != 0         # Ignore events of velocity 0
+            } $t->events;
 
-        # XXX Assume that there is one channel per track
-        my $track_channel = $self->one_channel ? 0 : $events[0][2];
+            # XXX Assume that there is one channel per track
+            my $track_channel = $self->one_channel ? 0 : $events[0][2];
 
-        # Skip if there are no events and no channel
-        next unless @events && defined $track_channel;
+            # Skip if there are no events and no channel
+            next unless @events && defined $track_channel;
 
-        # Skip if this is not a channel to analyze
-        next if $self->analyze && keys @{ $self->analyze }
-            && !grep { $_ == $track_channel } @{ $self->analyze };
+            # Skip if this is not a channel to analyze
+            next if $self->analyze && keys @{ $self->analyze }
+                && !grep { $_ == $track_channel } @{ $self->analyze };
 
-        $i++;
-        $analysis .= "Track $i. Channel: $track_channel\n";
+            $i++;
+            $analysis .= "Track $i. Channel: $track_channel\n";
 
-        # Declare the notes to inspect
-        my $text = '';
+            # Declare the notes to inspect
+            my $text = '';
 
-        # Accumulate the notes
-        for my $event ( @events ) {
-            # Transliterate MIDI note numbers to alpha-code
-            ( my $str = $event->[3] ) =~ tr/0-9/a-j/;
-            $text .= "$str ";
+            # Accumulate the notes
+            for my $event ( @events ) {
+                # Transliterate MIDI note numbers to alpha-code
+                ( my $str = $event->[3] ) =~ tr/0-9/a-j/;
+                $text .= "$str ";
+            }
+
+            # Parse the note text into ngrams
+            my $ngram  = Lingua::EN::Ngram->new( text => $text );
+            my $phrase = $ngram->ngram( $self->ngram_size );
+
+            # Counter for the ngrams seen
+            my $j = 0;
+
+            # Display the ngrams in order of their repetition amount
+            for my $p ( sort { $phrase->{$b} <=> $phrase->{$a} || $a cmp $b } keys %$phrase ) {
+                # Skip single occurance phrases if requested
+                next if !$self->single_phrases && $phrase->{$p} == 1;
+
+                # Don't allow phrases that are not the right size
+                my @items = grep { $_ } split /\s+/, $p;
+                next unless @items == $self->ngram_size;
+
+                $j++;
+
+                # End if we are past the maximum
+                last if $self->max_phrases > 0 && $j > $self->max_phrases;
+
+                # Transliterate our letter code back to MIDI note numbers
+                ( my $num = $p ) =~ tr/a-j/0-9/;
+
+                # Convert MIDI numbers to named notes.
+                my $text = _convert($num);
+
+                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text;
+
+                # Save the number of times the phrase is repeated
+                $self->notes->{$track_channel}{$num} = $phrase->{$p};
+            }
+
+            $analysis .= $self->_gestalt_analysis( \@events )
+                if $self->gestalt;
         }
-
-        # Parse the note text into ngrams
-        my $ngram  = Lingua::EN::Ngram->new( text => $text );
-        my $phrase = $ngram->ngram( $self->ngram_size );
-
-        # Counter for the ngrams seen
-        my $j = 0;
-
-        # Display the ngrams in order of their repetition amount
-        for my $p ( sort { $phrase->{$b} <=> $phrase->{$a} || $a cmp $b } keys %$phrase ) {
-            # Skip single occurance phrases if requested
-            next if !$self->single_phrases && $phrase->{$p} == 1;
-
-            # Don't allow phrases that are not the right size
-            my @items = grep { $_ } split /\s+/, $p;
-            next unless @items == $self->ngram_size;
-
-            $j++;
-
-            # End if we are past the maximum
-            last if $self->max_phrases > 0 && $j > $self->max_phrases;
-
-            # Transliterate our letter code back to MIDI note numbers
-            ( my $num = $p ) =~ tr/a-j/0-9/;
-
-            # Convert MIDI numbers to named notes.
-            my $text = _convert($num);
-
-            $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text;
-
-            # Save the number of times the phrase is repeated
-            $self->notes->{$track_channel}{$num} = $phrase->{$p};
-        }
-
-        $analysis .= $self->_gestalt_analysis( \@events )
-            if $self->gestalt;
-    }
     }
 
     return $analysis;
