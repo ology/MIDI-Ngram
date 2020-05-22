@@ -23,7 +23,24 @@ $obj = new_ok 'MIDI::Ngram' => [
     weight     => 1,
 ];
 
+is_deeply $obj->in_file, [ 'eg/twinkle_twinkle.mid' ], 'in_file';
+is $obj->ngram_size, 3, 'ngram_size';
+is $obj->max_phrases, 10, 'max_phrases';
+is $obj->bpm, 100, 'bpm';
+is_deeply $obj->durations, [qw(hn qn en)], 'durations';
+is_deeply $obj->patches, [0 .. 127], 'patches';
+is $obj->out_file, 'midi-ngram.mid', 'out_file';
+ok !$obj->pause_duration, 'pause_duration';
+ok !$obj->analyze, 'analyze';
+is $obj->loop, 10, 'loop';
+ok $obj->weight, 'weight';
+ok !$obj->random_patch, 'random_patch';
+ok !$obj->shuffle_phrases, 'shuffle_phrases';
+ok !$obj->single_phrases, 'single_phrases';
+ok !$obj->one_channel, 'one_channel';
+ok !$obj->bounds, 'bounds';
 is $obj->score, undef, 'score undef';
+is_deeply $obj->notes, {}, 'notes';
 
 $obj->process;
 
