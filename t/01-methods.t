@@ -1,4 +1,7 @@
-#!perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
 use Test::More;
 use Test::Exception;
 
@@ -14,13 +17,11 @@ throws_ok {
     $obj = MIDI::Ngram->new( in_file => 'eg/twinkle_twinkle.mid' )
 } qr/Invalid list/, 'invalid in_file';
 
-$obj = MIDI::Ngram->new(
+$obj = new_ok 'MIDI::Ngram' => [
     in_file    => [ 'eg/twinkle_twinkle.mid' ],
     ngram_size => 3,
     weight     => 1,
-);
-
-isa_ok $obj, 'MIDI::Ngram';
+];
 
 is $obj->score, undef, 'score undef';
 
