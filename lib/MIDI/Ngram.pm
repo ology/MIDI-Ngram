@@ -55,7 +55,9 @@ has in_file => (
 
 =head2 ngram_size
 
-Ngram phrase size.  Default: 2
+Ngram phrase size.
+
+Default: C<2>
 
 =cut
 
@@ -67,7 +69,9 @@ has ngram_size => (
 
 =head2 max_phrases
 
-The maximum number of phrases to play.  Default: 10
+The maximum number of phrases to analyze/play.
+
+Default: C<10>
 
 =cut
 
@@ -79,7 +83,9 @@ has max_phrases => (
 
 =head2 bpm
 
-Beats per minute.  Default: 100
+Beats per minute.
+
+Default: C<100>
 
 =cut
 
@@ -106,7 +112,8 @@ has durations => (
 =head2 patches
 
 The patches to choose from (at random) if given the B<random_patch> option.
-Otherwise 0 (piano) is used.  Default: [0 .. 127]
+
+Default: C<0 .. 127>
 
 =cut
 
@@ -118,7 +125,9 @@ has patches => (
 
 =head2 out_file
 
-MIDI output file.  Default: midi-ngram.mid
+MIDI output file.
+
+Default: C<midi-ngram.mid>
 
 =cut
 
@@ -129,7 +138,9 @@ has out_file => (
 
 =head2 pause_duration
 
-Insert a rest of the given duration after each phrase.  Default: '' (no resting)
+Insert a rest of the given duration after each phrase.
+
+Default: C<''> (no resting)
 
 =cut
 
@@ -143,6 +154,8 @@ has pause_duration => (
 
 ArrayRef of the channels to analyze.  If not given, all channels are analyzed.
 
+Default: C<[]>
+
 =cut
 
 has analyze => (
@@ -152,8 +165,10 @@ has analyze => (
 
 =head2 loop
 
-The number of times to choose a weighted phrase.  * Only works with the
-B<weight> option.  Default: 4
+The number of times to choose a weighted phrase.  * This only works
+with the B<weight> option.
+
+Default: C<4>
 
 =cut
 
@@ -165,7 +180,9 @@ has loop => (
 
 =head2 weight
 
-Boolean.  Play phrases by their ngram repetition occurrence.  Default: 0
+Boolean.  Play phrases by their ngram repetition occurrence.
+
+Default: C<0>
 
 =cut
 
@@ -178,7 +195,8 @@ has weight => (
 =head2 random_patch
 
 Boolean.  Choose a random patch from B<patches> for each channel.
-Default: 0 (piano)
+
+Default: C<0> (piano)
 
 =cut
 
@@ -190,7 +208,9 @@ has random_patch => (
 
 =head2 shuffle_phrases
 
-Boolean.  Shuffle the non-weighted phrases before playing them.  Default: 0
+Boolean.  Shuffle the non-weighted phrases before playing them.
+
+Default: C<0>
 
 =cut
 
@@ -202,7 +222,9 @@ has shuffle_phrases => (
 
 =head2 single_phrases
 
-Boolean.  Allow single occurrence ngrams.  Default: 0
+Boolean.  Allow single occurrence ngrams.
+
+Default: C<0>
 
 =cut
 
@@ -214,7 +236,9 @@ has single_phrases => (
 
 =head2 one_channel
 
-Boolean.  Accumulate phrases into a single list.  Default: 0
+Boolean.  Accumulate phrases into a single list.
+
+Default: C<0>
 
 =cut
 
@@ -228,6 +252,8 @@ has one_channel => (
 
 Boolean.  Include pitch range in the analysis.
 
+Default: C<0>
+
 =cut
 
 has gestalt => (
@@ -238,8 +264,7 @@ has gestalt => (
 
 =head2 score
 
-The MIDI score object.  Constructed at runtime.  Constructor argument if given
-will be ignored.
+The L<MIDI::Simple/"MAIN-ROUTINES"> score object.  Constructed at runtime.
 
 =cut
 
@@ -251,8 +276,7 @@ has score => (
 
 =head2 notes
 
-The bucket of ngrams.  Constructed at runtime.  Constructor argument if given
-will be ignored.
+The hash-reference bucket of ngrams.  Constructed at runtime.
 
 =cut
 
