@@ -1,6 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Improve documentation.
+    - Fix max_phrases "isa" logic.
+    - Use the MIDI::Util module instead of manually building a score, etc.
 
 0.0901 2018-02-20 21:25:52
     - CRUCIAL FIX: Accumulate ngram phrase counts instead of overwriting.
