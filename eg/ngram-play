@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
-# Play the top repeated note phrases of a MIDI file or files.
+# Play the top repeated note phrases of a MIDI file or files and make
+# a transition network diagram.
 # Example:
 # perl ngram-play --files ~/Music/foo.mid --size 3 --max 0 --shuf --pause en
 
@@ -9,6 +10,7 @@ use warnings;
 
 use MIDI::Ngram;
 use Getopt::Long;
+use GraphViz2;
 use File::Find::Rule;
 
 my %opts = (
@@ -17,7 +19,7 @@ my %opts = (
     size    => 2,        # ngram size
     max     => 20,       # -1 for all records
     bpm     => 100,      # Beats per minute
-    dura    => 'qn tqn', # Note durations
+    dura    => 'hn qn en', # Note durations
     out     => "$0.mid", # Output MIDI file
     pause   => '',       # Insert a rest after each phrase
     analyze => '',       # Analyze all channels
@@ -28,6 +30,7 @@ my %opts = (
     single  => 0,        # Allow phrases seen only once
     one     => 0,        # Analyze phrases into one list
     bounds  => 0,        # Show pitch bounds
+    thresh  => 10,       # Threshold to show net edges
 );
 GetOptions( \%opts, 
     'help|?',
@@ -48,6 +51,7 @@ GetOptions( \%opts,
     'single',
     'one',
     'bounds',
+    'thresh=i',
 ) or die 'Failed GetOptions';
 
 my @files;
@@ -96,3 +100,29 @@ if ( $opts{out} ) {
 
     $mng->write;
 }
+
+my $g = GraphViz2->new(
+    global => { directed => 1 },
+    node   => { shape => 'oval' },
+    edge   => { color => 'grey' },
+);
+
+my %nodes;
+my %edges;
+
+for my $ngram ( keys %{ $mng->net } ) {
+    next unless $mng->net->{$ngram} >= $opts{thresh};
+
+    my ($i, $j) = split '-', $ngram;
+
+    $g->add_node(name => $i)
+        unless $nodes{$i}++;
+
+    $g->add_node(name => $j)
+        unless $nodes{$j}++;
+
+    $g->add_edge(from => $i, to => $j, label => $mng->net->{$ngram})
+        unless $edges{$ngram}++;
+}
+
+$g->run( format => 'png', output_file => $0 . '.png' );
