@@ -325,7 +325,6 @@ sub process {
     my ($self) = @_;
 
     my $analysis;
-    my $last;
 
     for my $file ( @{ $self->in_file } ) {
         # Counter for the tracks seen
@@ -360,11 +359,22 @@ sub process {
             # Declare the notes to inspect
             my $text = '';
 
+            my @group;
+            my $last;
+
             # Accumulate the notes
             for my $event ( @events ) {
                 # Transliterate MIDI note numbers to alpha-code
                 ( my $str = $event->[3] ) =~ tr/0-9/a-j/;
                 $text .= "$str ";
+
+                if (@group == $self->ngram_size) {
+                    my $group = join ' ', @group;
+                    $self->net->{ $last . '-' . $group }++ if $last;
+                    $last = $group;
+                    shift @group;
+                }
+                push @group, $event->[3];
             }
 
             # Parse the note text into ngrams
@@ -395,9 +405,6 @@ sub process {
                 my $text = _convert($num);
 
                 $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text;
-
-                $self->net->{ $last . '-' . $num }++ if $last;
-                $last = $num;
 
                 # Save the number of times the phrase is repeated
                 $self->notes->{$track_channel}{$num} += $phrase->{$p};
