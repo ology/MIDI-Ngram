@@ -28,7 +28,7 @@ use Music::Tempo;
     ngram_size   => 3,
     patches      => [qw( 68 69 70 71 72 73 )],
     random_patch => 1,
-    gestalt      => 1,
+    bounds       => 1,
   );
 
   my $analysis = $mng->process;
@@ -252,7 +252,7 @@ has one_channel => (
     default => sub { 0 },
 );
 
-=head2 gestalt
+=head2 bounds
 
 Boolean.  Include pitch range in the analysis.
 
@@ -260,7 +260,7 @@ Default: C<0>
 
 =cut
 
-has gestalt => (
+has bounds => (
     is      => 'ro',
     isa     => \&_is_boolean,
     default => sub { 0 },
@@ -387,7 +387,7 @@ sub process {
             }
 
             $analysis .= $self->_gestalt_analysis( \@events )
-                if $self->gestalt;
+                if $self->bounds;
         }
     }
 
@@ -409,10 +409,10 @@ sub _gestalt_analysis {
     $note    = Music::Note->new( $g->PitchMiddle, 'midinum' );
     my $mid  = $note->format('midi');
 
-    my $gestalt = "\tRange: $low to $high\n"
+    my $bounds = "\tRange: $low to $high\n"
         . "\tSpan: $mid +/- " . $g->PitchRange . "\n";
 
-    return $gestalt;
+    return $bounds;
 }
 
 =head2 populate()
