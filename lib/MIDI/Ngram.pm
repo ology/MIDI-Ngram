@@ -13,7 +13,6 @@ use Lingua::EN::Ngram;
 use List::Util qw( shuffle );
 use List::Util::WeightedChoice qw( choose_weighted );
 use MIDI::Simple;
-use lib $ENV{HOME} . '/sandbox/MIDI-Util/lib';
 use MIDI::Util;
 use Music::Gestalt;
 use Music::Note;
