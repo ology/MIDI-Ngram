@@ -94,7 +94,7 @@ The note durations to choose from (at random).  Default: [qn tqn]
 has durations => (
     is      => 'ro',
     isa     => \&_invalid_list,
-    default => sub { [qw( qn tqn )] },
+    default => sub { [qw( hn qn en )] },
 );
 
 =head2 patches
