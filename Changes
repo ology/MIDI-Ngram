@@ -2,6 +2,7 @@ Revision history for MIDI-Ngram
 
 {{$NEXT}}
     - Add transition network processing.
+    - Enhance eg/ngram-play to create a graphviz diagram.
 
 0.1003 2020-05-22 02:43:24
     - Fix eg/ngram-play.
