@@ -31,6 +31,8 @@ use Music::Note;
 
   my $analysis = $mng->process;
 
+  print Dumper $mng->net;
+
   my $playback = $mng->populate;
 
   $mng->write;
@@ -38,8 +40,8 @@ use Music::Note;
 =head1 DESCRIPTION
 
 C<MIDI::Ngram> parses a given list of MIDI files, finds the top
-repeated note phrases, outputs the analysis, and renders them to a
-MIDI file if desired.
+repeated note phrases, outputs the analysis, transition network, and
+renders them to a MIDI file if desired.
 
 =head1 ATTRIBUTES
 
@@ -279,11 +281,25 @@ has score => (
 
 =head2 notes
 
-The hash-reference bucket of ngrams.  Constructed at runtime.
+The hash-reference bucket of ngrams.  Constructed by the B<process>
+method.
 
 =cut
 
 has notes => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub { {} },
+);
+
+=head2 net
+
+A hash-reference ngram transition network.  Constructed by the
+B<process> method.
+
+=cut
+
+has net => (
     is       => 'ro',
     init_arg => undef,
     default  => sub { {} },
@@ -299,7 +315,7 @@ Create a new C<MIDI::Ngram> object.
 
 =head2 process
 
-  my $analysis = $mng->process;
+  $analysis = $mng->process;
 
 Find all ngram phrases and return the note analysis.
 
@@ -309,10 +325,9 @@ sub process {
     my ($self) = @_;
 
     my $analysis;
+    my $last;
 
-    my $files = ref $self->in_file eq 'ARRAY' ? $self->in_file : [ $self->in_file ];
-
-    for my $file ( @$files ) {
+    for my $file ( @{ $self->in_file } ) {
         # Counter for the tracks seen
         my $i = 0;
 
@@ -381,6 +396,9 @@ sub process {
 
                 $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text;
 
+                $self->net->{ $last . '-' . $num }++ if $last;
+                $last = $num;
+
                 # Save the number of times the phrase is repeated
                 $self->notes->{$track_channel}{$num} += $phrase->{$p};
             }
@@ -416,7 +434,7 @@ sub _gestalt_analysis {
 
 =head2 populate
 
-  my $playback = $mng->populate;
+  $playback = $mng->populate;
 
 Add notes to the MIDI score and return the playback notes.
 
