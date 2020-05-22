@@ -9,10 +9,11 @@
 use strict;
 use warnings;
 
-use MIDI::Ngram;
+use File::Find::Rule;
 use Getopt::Long;
 use GraphViz2;
-use File::Find::Rule;
+use MIDI::Ngram;
+use Music::Note;
 
 my %opts = (
     dir     => undef,    # Directory of MIDI files
@@ -115,6 +116,20 @@ for my $ngram ( keys %{ $mng->net } ) {
     next unless $mng->net->{$ngram} >= $opts{thresh};
 
     my ($i, $j) = split '-', $ngram;
+
+    my @notes;
+    for my $n (split ' ', $i) {
+        my $note = Music::Note->new( $n, 'midinum' );
+        push @notes, $note->format('ISO');
+    }
+    $i = join ' ', @notes;
+
+    @notes = ();
+    for my $n (split ' ', $j) {
+        my $note = Music::Note->new( $n, 'midinum' );
+        push @notes, $note->format('ISO');
+    }
+    $j = join ' ', @notes;
 
     $g->add_node(name => $i)
         unless $nodes{$i}++;
