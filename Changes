@@ -1,6 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Add transition network processing.
+
+0.1003 2020-05-22 02:43:24
     - Fix eg/ngram-play.
     - Improve documentation.
 
