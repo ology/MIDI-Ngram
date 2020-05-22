@@ -2,6 +2,9 @@ Revision history for MIDI-Ngram
 
 {{$NEXT}}
     - Improve documentation.
+
+0.1000 2020-05-22 01:29:41
+    - Improve documentation.
     - Clean-up code.
     - Use the MIDI::Util module instead of manually building a score, etc.
 
