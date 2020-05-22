@@ -103,7 +103,7 @@ has bpm => (
 
 The note durations to choose from (at random).
 
-Default: C<hn qn en>
+Default: C<[hn qn en]>
 
 =cut
 
@@ -117,7 +117,7 @@ has durations => (
 
 The patches to choose from (at random) if given the B<random_patch> option.
 
-Default: C<0 .. 127>
+Default: C<[0 .. 127]>
 
 =cut
 
@@ -200,7 +200,7 @@ has weight => (
 
 Boolean.  Choose a random patch from B<patches> for each channel.
 
-Default: C<0> (piano)
+Default: C<0> (meaning "use the piano patch")
 
 =cut
 
