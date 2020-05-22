@@ -2,7 +2,7 @@ Revision history for MIDI-Ngram
 
 {{$NEXT}}
     - Improve documentation.
-    - Fix max_phrases "isa" logic.
+    - Clean-up code.
     - Use the MIDI::Util module instead of manually building a score, etc.
 
 0.0901 2018-02-20 21:25:52
