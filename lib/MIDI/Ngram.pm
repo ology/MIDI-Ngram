@@ -20,6 +20,7 @@ use Music::Tempo;
 =head1 SYNOPSIS
 
   use MIDI::Ngram;
+
   my $mng = MIDI::Ngram->new(
     in_file      => [ 'eg/twinkle_twinkle.mid' ],
     ngram_size   => 3,
@@ -27,8 +28,11 @@ use Music::Tempo;
     random_patch => 1,
     gestalt      => 1,
   );
+
   my $analysis = $mng->process;
+
   my $playback = $mng->populate;
+
   $mng->write;
 
 =head1 DESCRIPTION
