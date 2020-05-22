@@ -372,7 +372,7 @@ sub process {
                     my $group = join ' ', @group;
                     $self->net->{ $last . '-' . $group }++ if $last;
                     $last = $group;
-                    shift @group;
+                    @group = ();
                 }
                 push @group, $event->[3];
             }
