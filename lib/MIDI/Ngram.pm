@@ -87,7 +87,9 @@ has bpm => (
 
 =head2 durations
 
-The note durations to choose from (at random).  Default: [qn tqn]
+The note durations to choose from (at random).
+
+Default: C<hn qn en>
 
 =cut
 
