@@ -156,7 +156,7 @@ has pause_duration => (
 
 ArrayRef of the channels to analyze.  If not given, all channels are analyzed.
 
-Default: C<[]>
+Default: C<undef>
 
 =cut
 
