@@ -16,7 +16,6 @@ use MIDI::Simple;
 use MIDI::Util;
 use Music::Gestalt;
 use Music::Note;
-use Music::Tempo;
 
 =head1 SYNOPSIS
 
@@ -599,7 +598,7 @@ L<Music::Note>
 
 L<MIDI::Simple>
 
-L<Music::Tempo>
+L<MIDI::Util>
 
 L<Music::Gestalt>
 
