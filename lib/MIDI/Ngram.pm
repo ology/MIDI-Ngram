@@ -238,7 +238,7 @@ has single_phrases => (
 
 =head2 one_channel
 
-Boolean.  Accumulate phrases into a single list.
+Boolean.  Accumulate phrases onto a single channel.
 
 Default: C<0>
 
