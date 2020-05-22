@@ -13,6 +13,7 @@ use Lingua::EN::Ngram;
 use List::Util qw( shuffle );
 use List::Util::WeightedChoice qw( choose_weighted );
 use MIDI::Simple;
+use MIDI::Util;
 use Music::Gestalt;
 use Music::Note;
 use Music::Tempo;
@@ -49,7 +50,7 @@ Required.  An ArrayRef of MIDI files to process.
 
 has in_file => (
     is       => 'ro',
-    isa      => \&_invalid_list,
+    isa      => \&_is_list,
     required => 1,
 );
 
@@ -63,7 +64,7 @@ Default: C<2>
 
 has ngram_size => (
     is      => 'ro',
-    isa     => \&_invalid_integer,
+    isa     => \&_is_integer,
     default => sub { 2 },
 );
 
@@ -77,7 +78,7 @@ Default: C<10>
 
 has max_phrases => (
     is      => 'ro',
-    isa     => \&_invalid_integer,
+    isa     => \&_is_integer,
     default => sub { 10 },
 );
 
@@ -91,7 +92,7 @@ Default: C<100>
 
 has bpm => (
     is      => 'ro',
-    isa     => \&_invalid_integer,
+    isa     => \&_is_integer,
     default => sub { 100 },
 );
 
@@ -105,7 +106,7 @@ Default: C<hn qn en>
 
 has durations => (
     is      => 'ro',
-    isa     => \&_invalid_list,
+    isa     => \&_is_list,
     default => sub { [qw( hn qn en )] },
 );
 
@@ -119,7 +120,7 @@ Default: C<0 .. 127>
 
 has patches => (
     is      => 'ro',
-    isa     => \&_invalid_list,
+    isa     => \&_is_list,
     default => sub { [ 0 .. 127 ] },
 );
 
@@ -160,7 +161,7 @@ Default: C<[]>
 
 has analyze => (
     is  => 'ro',
-    isa => \&_invalid_list,
+    isa => \&_is_list,
 );
 
 =head2 loop
@@ -174,7 +175,7 @@ Default: C<4>
 
 has loop => (
     is      => 'ro',
-    isa     => \&_invalid_integer,
+    isa     => \&_is_integer,
     default => sub { 10 },
 );
 
@@ -188,7 +189,7 @@ Default: C<0>
 
 has weight => (
     is      => 'ro',
-    isa     => \&_invalid_boolean,
+    isa     => \&_is_boolean,
     default => sub { 0 },
 );
 
@@ -202,7 +203,7 @@ Default: C<0> (piano)
 
 has random_patch => (
     is      => 'ro',
-    isa     => \&_invalid_boolean,
+    isa     => \&_is_boolean,
     default => sub { 0 },
 );
 
@@ -216,7 +217,7 @@ Default: C<0>
 
 has shuffle_phrases => (
     is      => 'ro',
-    isa     => \&_invalid_boolean,
+    isa     => \&_is_boolean,
     default => sub { 0 },
 );
 
@@ -230,7 +231,7 @@ Default: C<0>
 
 has single_phrases => (
     is      => 'ro',
-    isa     => \&_invalid_boolean,
+    isa     => \&_is_boolean,
     default => sub { 0 },
 );
 
@@ -244,7 +245,7 @@ Default: C<0>
 
 has one_channel => (
     is      => 'ro',
-    isa     => \&_invalid_boolean,
+    isa     => \&_is_boolean,
     default => sub { 0 },
 );
 
@@ -258,7 +259,7 @@ Default: C<0>
 
 has gestalt => (
     is      => 'ro',
-    isa     => \&_invalid_boolean,
+    isa     => \&_is_boolean,
     default => sub { 0 },
 );
 
@@ -422,7 +423,8 @@ Add notes to the MIDI score and return the playback notes.
 sub populate {
     my ($self) = @_;
 
-    $self->score( _setup_midi( bpm => $self->bpm ) );
+    my $score = MIDI::Util::setup_score( bpm => $self->bpm );
+    $self->score($score);
 
     my @phrases;
     my $playback;
@@ -435,7 +437,7 @@ sub populate {
             my $func = sub {
                 my $patch = $self->random_patch ? $self->_random_patch() : 0;
 
-                _set_chan_patch( $self->score, $channel, $patch );
+                MIDI::Util::set_chan_patch( $self->score, $channel, $patch );
 
                 for my $n ( 1 .. $self->loop ) {
                     my $choice = choose_weighted(
@@ -498,7 +500,7 @@ sub populate {
             my $func = sub {
                 my $patch = $self->random_patch ? $self->_random_patch() : 0;
 
-                _set_chan_patch( $self->score, $channel, $patch);
+                MIDI::Util::set_chan_patch( $self->score, $channel, $patch);
 
                 for my $note ( @all ) {
                     if ( $note eq 'r' ) {
@@ -554,49 +556,17 @@ sub _convert {
     return $text;
 }
 
-sub _setup_midi {
-    my %args = (
-        volume  => 120,
-        bpm     => 100,
-        channel => 0,
-        patch   => 0,
-        octave  => 5,
-        @_,
-    );
-
-    my $score = MIDI::Simple->new_score();
-
-    $score->set_tempo( bpm_to_ms($args{bpm}) * 1000 );
-
-    $score->Volume($args{volume});
-    $score->Channel($args{channel});
-    $score->Octave($args{octave});
-    $score->patch_change( $args{channel}, $args{patch} );
-
-    return $score;
-}
-
-sub _set_chan_patch {
-    my ( $score, $channel, $patch ) = @_;
-
-    $channel //= 0;
-    $patch   //= 0;
-
-    $score->patch_change( $channel, $patch );
-    $score->noop( 'c' . $channel );
-}
-
-sub _invalid_integer {
+sub _is_integer {
     croak 'Invalid integer'
         unless $_[0] && $_[0] =~ /^\d+$/ && $_[0] > 0;
 }
 
-sub _invalid_list {
+sub _is_list {
     croak 'Invalid list'
         unless ref $_[0] eq 'ARRAY';
 }
 
-sub _invalid_boolean {
+sub _is_boolean {
     croak 'Invalid Boolean'
         unless defined $_[0] && ( $_[0] == 1 || $_[0] == 0 );
 }
