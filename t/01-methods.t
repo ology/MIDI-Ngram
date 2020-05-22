@@ -41,6 +41,7 @@ ok !$obj->one_channel, 'one_channel';
 ok !$obj->bounds, 'bounds';
 is $obj->score, undef, 'score undef';
 is_deeply $obj->notes, {}, 'notes';
+is_deeply $obj->net, {}, 'net';
 
 $obj->process;
 
@@ -60,6 +61,20 @@ my $expected = {
 };
 
 is_deeply $obj->notes, $expected, 'processed weighted notes';
+
+$expected = {
+  '48 60 67-48 64 62' => 1,
+  '48 64 62-50 65 64' => 1,
+  '50 65 64-52 65 50' => 1,
+  '52 65 50-52 67 65' => 1,
+  '52 67 65-52 67 69' => 1,
+  '52 67 69-53 62 55' => 1,
+  '53 62 55-53 65 64' => 1,
+  '62 55 60-48 60 67' => 1,
+  '67 52 67-62 55 60' => 1,
+};
+
+is_deeply $obj->net, $expected, 'net';
 
 $obj->populate;
 
