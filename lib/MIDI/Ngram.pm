@@ -370,7 +370,7 @@ sub process {
 
                 $j++;
 
-                # End if we are past the maximum
+                # End if a max is set and we are past the maximum
                 last if $self->max_phrases > 0 && $j > $self->max_phrases;
 
                 # Transliterate our letter code back to MIDI note numbers
