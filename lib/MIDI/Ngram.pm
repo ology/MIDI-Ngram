@@ -13,6 +13,7 @@ use Lingua::EN::Ngram;
 use List::Util qw( shuffle );
 use List::Util::WeightedChoice qw( choose_weighted );
 use MIDI::Simple;
+use lib $ENV{HOME} . '/sandbox/MIDI-Util/lib';
 use MIDI::Util;
 use Music::Gestalt;
 use Music::Note;
@@ -78,7 +79,7 @@ Default: C<10>
 
 has max_phrases => (
     is      => 'ro',
-    isa     => \&_is_integer,
+    isa     => \&_is_integer0,
     default => sub { 10 },
 );
 
@@ -556,9 +557,14 @@ sub _convert {
     return $text;
 }
 
+sub _is_integer0 {
+    croak 'Not greater than or equal to zero'
+        unless defined $_[0] && $_[0] =~ /^\d+$/;
+}
+
 sub _is_integer {
     croak 'Invalid integer'
-        unless $_[0] && $_[0] =~ /^\d+$/ && $_[0] > 0;
+        unless defined $_[0] && $_[0] =~ /^\d+$/ && $_[0] > 0;
 }
 
 sub _is_list {
