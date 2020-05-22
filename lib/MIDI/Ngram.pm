@@ -291,13 +291,13 @@ has notes => (
 
 =head1 METHODS
 
-=head2 new()
+=head2 new
 
   $mng = MIDI::Ngram->new(%arguments);
 
 Create a new C<MIDI::Ngram> object.
 
-=head2 process()
+=head2 process
 
   my $analysis = $mng->process;
 
@@ -414,7 +414,7 @@ sub _gestalt_analysis {
     return $bounds;
 }
 
-=head2 populate()
+=head2 populate
 
   my $playback = $mng->populate;
 
@@ -524,7 +524,7 @@ sub populate {
     return $playback;
 }
 
-=head2 write()
+=head2 write
 
   $mng->write;
 
