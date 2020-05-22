@@ -170,7 +170,7 @@ has analyze => (
 The number of times to choose a weighted phrase.  * This only works
 with the B<weight> option.
 
-Default: C<4>
+Default: C<10>
 
 =cut
 
