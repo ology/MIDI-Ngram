@@ -537,6 +537,7 @@ sub populate {
                         $self->score->r( $self->pause_duration );
                     }
                     else {
+                        # XXX This is not sophisticated at all
                         my $duration = $self->durations->[ int rand @{ $self->durations } ];
                         $self->score->n( $duration, $note );
                     }
