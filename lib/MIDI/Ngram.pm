@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of a MIDI file
 
-our $VERSION = '0.1101';
+our $VERSION = '0.1102';
 
 use Moo;
 use strictures 2;
@@ -170,7 +170,7 @@ has analyze => (
 =head2 loop
 
 The number of times to choose a weighted phrase.  * This only works
-with the B<weight> option.
+in conjunction with the B<weight> option.
 
 Default: C<10>
 
@@ -184,7 +184,9 @@ has loop => (
 
 =head2 weight
 
-Boolean.  Play phrases by their ngram repetition occurrence.
+Boolean.  Play phrases according to the probability of their
+repetition occurrence with the
+L<List::Util::WeightedChoice/choose_weighted> function.
 
 Default: C<0>
 
