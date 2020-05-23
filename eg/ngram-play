@@ -109,7 +109,6 @@ my $g = GraphViz2->new(
     edge   => { color => 'grey' },
 );
 
-my %nodes;
 my %edges;
 
 for my $edge ( keys %{ $mng->net } ) {
@@ -132,10 +131,6 @@ for my $edge ( keys %{ $mng->net } ) {
     }
     $j = join ' ', @notes;
 
-    $g->add_node(name => $i)
-        unless $nodes{$i}++;
-    $g->add_node(name => $j)
-        unless $nodes{$j}++;
     $g->add_edge(from => $i, to => $j, label => $mng->net->{$edge})
         unless $edges{$edge}++;
 }
