@@ -185,8 +185,8 @@ has loop => (
 =head2 weight
 
 Boolean.  Play phrases according to the probability of their
-repetition occurrence with the
-L<List::Util::WeightedChoice/choose_weighted> function.
+repetition occurrence with the function
+L<List::Util::WeightedChoice/choose_weighted>.
 
 Default: C<0>
 
