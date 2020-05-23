@@ -481,6 +481,7 @@ sub populate {
 
                     # Add each chosen note to the score
                     for my $note ( split /\s+/, $choice ) {
+                        # XXX This is not sophisticated at all
                         my $duration = $self->durations->[ int rand @{ $self->durations } ];
                         $self->score->n( $duration, $note );
                     }
