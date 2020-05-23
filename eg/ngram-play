@@ -112,13 +112,13 @@ my $g = GraphViz2->new(
 my %nodes;
 my %edges;
 
-for my $ngram ( keys %{ $mng->net } ) {
-    next unless $mng->net->{$ngram} >= $opts{thresh};
+for my $edge ( keys %{ $mng->net } ) {
+    next unless $mng->net->{$edge} >= $opts{thresh};
 
-    # Split the ngram in two
-    my ($i, $j) = split '-', $ngram;
+    # Split the edge in two
+    my ($i, $j) = split '-', $edge;
 
-    # Convert midinum to ISO in the ngram
+    # Convert midinum to ISO in the edge
     my @notes;
     for my $n (split ' ', $i) {
         my $note = Music::Note->new( $n, 'midinum' );
@@ -136,8 +136,8 @@ for my $ngram ( keys %{ $mng->net } ) {
         unless $nodes{$i}++;
     $g->add_node(name => $j)
         unless $nodes{$j}++;
-    $g->add_edge(from => $i, to => $j, label => $mng->net->{$ngram})
-        unless $edges{$ngram}++;
+    $g->add_edge(from => $i, to => $j, label => $mng->net->{$edge})
+        unless $edges{$edge}++;
 }
 
 $g->run( format => 'png', output_file => $0 . '.png' );
