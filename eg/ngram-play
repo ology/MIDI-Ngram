@@ -6,6 +6,7 @@
 # Examples:
 # perl ngram-play --files ~/Music/foo.mid --size 3 --max 0 --shuf --pause en
 # perl ngram-play --files ~/Music/twinkle_twinkle.mid --size 2 --out '' --thresh 2
+# perl ngram-play --files ~/Music/moonlight.mid --size 3 --max 10 --out '' --image
 
 use strict;
 use warnings;
