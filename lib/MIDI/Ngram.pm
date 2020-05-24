@@ -362,7 +362,7 @@ sub process {
         for my $t ( $opus->tracks ) {
             my $score_r = MIDI::Score::events_r_to_score_r( [$t->events] );
 
-            # Collect the note events for each track
+            # Collect the note events for each note event
             my @events = grep {
                 $_->[0] eq 'note'
                 && $_->[3] != 9     # Avoid the drum channel
