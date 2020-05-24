@@ -66,7 +66,7 @@ renders them to a MIDI file if desired.
 
 =head2 in_file
 
-Required.  An ArrayRef of MIDI files to process.
+Required.  An Array reference of MIDI files to process.
 
 =cut
 
@@ -191,7 +191,8 @@ has pause_duration => (
 
 =head2 analyze
 
-ArrayRef of the channels to analyze.  If not given, all channels are analyzed.
+Array reference of the channels to analyze.  If not given, all
+channels are analyzed.
 
 Default: C<undef>
 
