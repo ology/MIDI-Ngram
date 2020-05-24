@@ -360,7 +360,9 @@ sub process {
 
         # Handle each track...
         for my $t ( $opus->tracks ) {
+            # ['note', <start>, <duration>, <channel>, <note>, <velocity>]
             my $score_r = MIDI::Score::events_r_to_score_r( $t->events_r );
+            #MIDI::Score::dump_score($score_r);
 
             # Collect the note events for each note event
             my @events = grep {
