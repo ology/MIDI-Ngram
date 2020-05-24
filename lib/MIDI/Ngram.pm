@@ -383,6 +383,7 @@ sub process {
 
             # Declare the notes to inspect
             my $note_text = '';
+            my $dura_text = '';
 
             my @note_group;
             my $note_last;
@@ -390,7 +391,9 @@ sub process {
             # Accumulate the notes
             for my $event ( @events ) {
                 # Transliterate MIDI note numbers to alpha-code
-                ( my $str = $event->[4] ) =~ tr/0-9/a-j/;
+                ( my $str = $event->[2] ) =~ tr/0-9/a-j/;
+                $dura_text .= "$str ";
+                ( $str = $event->[4] ) =~ tr/0-9/a-j/;
                 $note_text .= "$str ";
 
                 if (@note_group == $self->ngram_size) {
@@ -403,11 +406,43 @@ sub process {
             }
 
             # Parse the note text into ngrams
+            my $dura_ngram = Lingua::EN::Ngram->new( text => $dura_text );
+            my $dura_phrase = $dura_ngram->ngram( $self->ngram_size );
             my $note_ngram = Lingua::EN::Ngram->new( text => $note_text );
             my $note_phrase = $note_ngram->ngram( $self->ngram_size );
 
             # Counter for the ngrams seen
             my $j = 0;
+
+            # Display the ngrams in order of their repetition amount
+            for my $p ( sort { $dura_phrase->{$b} <=> $dura_phrase->{$a} || $a cmp $b } keys %$dura_phrase ) {
+                # Skip single occurance phrases if requested
+                next if !$self->single_phrases && $dura_phrase->{$p} == 1;
+
+                # Don't allow phrases that are not the right size
+                my @items = grep { $_ } split /\s+/, $p;
+                next unless @items == $self->ngram_size;
+
+                $j++;
+
+                # End if a max is set and we are past the maximum
+                last if $self->max_phrases > 0 && $j > $self->max_phrases;
+
+                # Transliterate our letter code back to MIDI note numbers
+                ( my $num = $p ) =~ tr/a-j/0-9/;
+
+                # Convert MIDI numbers to named notes.
+#                my $dura_text = _dura_convert($num);
+
+#                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $dura_phrase->{$p}, $num, $dura_text;
+                $analysis .= sprintf "\t%d\t%d\t%s\n", $j, $dura_phrase->{$p}, $num;
+
+                # Save the number of times the phrase is repeated
+#                $self->notes->{$track_channel}{$num} += $dura_phrase->{$p};
+            }
+
+            # Reset counter for the ngrams seen
+            $j = 0;
 
             # Display the ngrams in order of their repetition amount
             for my $p ( sort { $note_phrase->{$b} <=> $note_phrase->{$a} || $a cmp $b } keys %$note_phrase ) {
