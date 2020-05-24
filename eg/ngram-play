@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
 
-# Play the top repeated note phrases of a MIDI file or files and make
-# a transition network diagram.
+# Make a new MIDI file of the top repeated note phrases of a list of
+# MIDI files or a directory, and make a transition network diagram.
+#
 # Examples:
 # perl ngram-play --files ~/Music/foo.mid --size 3 --max 0 --shuf --pause en
 # perl ngram-play --files ~/Music/twinkle_twinkle.mid --size 2 --out '' --thresh 2
