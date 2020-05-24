@@ -95,7 +95,7 @@ ok !$obj->shuffle_phrases, 'shuffle_phrases';
 ok !$obj->single_phrases, 'single_phrases';
 ok !$obj->one_channel, 'one_channel';
 ok !$obj->bounds, 'bounds';
-is $obj->score, undef, 'score undef';
+is $obj->score, undef, 'score';
 is_deeply $obj->notes, {}, 'notes';
 is_deeply $obj->net, {}, 'net';
 
