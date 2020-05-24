@@ -304,12 +304,25 @@ has score => (
 
 =head2 notes
 
-The hash-reference bucket of ngrams.  Constructed by the B<process>
-method.
+The hash-reference bucket of pitch ngrams.  Constructed by the
+B<process> method.
 
 =cut
 
 has notes => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub { {} },
+);
+
+=head2 dura
+
+The hash-reference bucket of duration ngrams.  Constructed by the
+B<process> method.
+
+=cut
+
+has dura => (
     is       => 'ro',
     init_arg => undef,
     default  => sub { {} },
@@ -353,6 +366,9 @@ sub process {
         # Counter for the tracks seen
         my $i = 0;
 
+        # Declare a tempo in microseconds
+        my $tempo = 500_000; # 120 quarter notes per minute default
+
         my $opus = MIDI::Opus->new({ from_file => $file });
 
         $analysis .= "Ngram analysis of $file:\n\tN\tReps\tPhrase\n";
@@ -361,6 +377,13 @@ sub process {
         for my $t ( $opus->tracks ) {
             my $score_r = MIDI::Score::events_r_to_score_r( $t->events_r );
             #MIDI::Score::dump_score($score_r);
+
+            # Get the tune tempo if set
+            for my $event (@$score_r) {
+                if ($event->[0] eq 'set_tempo' && $event->[2]) {
+                    $tempo = $event->[2];
+                }
+            }
 
             # Collect the note events for each note event
             my @events = grep {
@@ -432,13 +455,12 @@ sub process {
                 ( my $num = $p ) =~ tr/a-j/0-9/;
 
                 # Convert MIDI numbers to named notes.
-#                my $dura_text = _dura_convert($num);
+                my $dura_text = _dura_convert($num);
 
-#                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $dura_phrase->{$p}, $num, $dura_text;
-                $analysis .= sprintf "\t%d\t%d\t%s\n", $j, $dura_phrase->{$p}, $num;
+                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $dura_phrase->{$p}, $num, $dura_text;
 
                 # Save the number of times the phrase is repeated
-#                $self->notes->{$track_channel}{$num} += $dura_phrase->{$p};
+                $self->dura->{$track_channel}{$num} += $dura_phrase->{$p};
             }
 
             # Reset counter for the ngrams seen
@@ -629,20 +651,42 @@ sub _random_patch {
     return $self->patches->[ int rand @{ $self->patches } ];
 }
 
+# Convert MIDI numbers to named durations.
+sub _dura_convert {
+    my $string = shift;
+
+    my $text = '( ';
+
+    for my $n ( split /\s+/, $string ) {
+        my $dura = $n / 96 / 10;
+        for my $key (keys %MIDI::Simple::Length) {
+            if (sprintf('%.4f', $MIDI::Simple::Length{$key}) eq sprintf('%.4f', $dura)) {
+                $dura = $key;
+                last;
+            }
+        }
+        $text .= $dura . ' ';
+    }
+
+    $text .= ')';
+
+    return $text;
+}
+
 # Convert MIDI numbers to named notes.
 sub _note_convert {
     my $string = shift;
 
-    my $note_text = '( ';
+    my $text = '( ';
 
     for my $n ( split /\s+/, $string ) {
         my $note = Music::Note->new( $n, 'midinum' );
-        $note_text .= $note->format('midi') . ' ';
+        $text .= $note->format('midi') . ' ';
     }
 
-    $note_text .= ')';
+    $text .= ')';
 
-    return $note_text;
+    return $text;
 }
 
 sub _is_integer0 {

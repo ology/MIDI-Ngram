@@ -2,6 +2,7 @@ Revision history for MIDI-Ngram
 
 {{$NEXT}}
     - Improve eg/ngram-play.
+    - Process phrase durations.
 
 0.1106 2020-05-23 21:02:39
     - Improve documentation.

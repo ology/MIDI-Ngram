@@ -97,6 +97,7 @@ ok !$obj->one_channel, 'one_channel';
 ok !$obj->bounds, 'bounds';
 is $obj->score, undef, 'score';
 is_deeply $obj->notes, {}, 'notes';
+is_deeply $obj->dura, {}, 'notes';
 is_deeply $obj->net, {}, 'net';
 
 $obj->process;
@@ -116,7 +117,21 @@ my $expected = {
     }
 };
 
-is_deeply $obj->notes, $expected, 'processed weighted notes';
+is_deeply $obj->notes, $expected, 'processed notes';
+
+$expected = {
+    0 => {
+        '1920 1920 960' => 4,
+        '1920 960 1920' => 8,
+        '1920 960 960'  => 13,
+        '960 1920 1920' => 5,
+        '960 1920 960'  => 17,
+        '960 960 1920'  => 13,
+        '960 960 960'   => 7,
+    }
+};
+
+is_deeply $obj->dura, $expected, 'processed durations';
 
 $obj->populate;
 
