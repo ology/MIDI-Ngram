@@ -2,6 +2,7 @@ Revision history for MIDI-Ngram
 
 {{$NEXT}}
     - Improve documentation.
+    - Improve tests.
 
 0.1104 2020-05-23 18:14:27
     - Improve documentation.
