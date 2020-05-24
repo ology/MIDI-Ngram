@@ -9,8 +9,6 @@ use_ok 'MIDI::Ngram';
 
 my $filename = 'eg/twinkle_twinkle.mid';
 
-my $obj;
-
 throws_ok {
     MIDI::Ngram->new
 } qr/Missing required arguments: in_file/, 'file required';
@@ -75,7 +73,7 @@ throws_ok {
     MIDI::Ngram->new( in_file => [$filename], bounds => 'foo' )
 } qr/Invalid Boolean/, 'invalid bounds';
 
-$obj = new_ok 'MIDI::Ngram' => [
+my $obj = new_ok 'MIDI::Ngram' => [
     in_file    => [$filename],
     ngram_size => 3,
     weight     => 1,
