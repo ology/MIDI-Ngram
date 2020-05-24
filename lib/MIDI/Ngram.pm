@@ -291,8 +291,8 @@ has bounds => (
 
 =head2 score
 
-The score object in L<MIDI::Simple/"MAIN-ROUTINES">.  Constructed at
-runtime.
+The score object in L<MIDI::Simple/"MAIN-ROUTINES">.  Constructed by
+the B<populate> method.
 
 =cut
 
