@@ -665,15 +665,19 @@ sub _dura_convert {
 
     my @text;
 
+    my $match = 0;
+
     for my $n ( split /\s+/, $string ) {
         my $dura = $n / 96 / 10;
         for my $key (keys %MIDI::Simple::Length) {
             if (sprintf('%.4f', $MIDI::Simple::Length{$key}) eq sprintf('%.4f', $dura)) {
+                $match++;
                 $dura = $key;
                 last;
             }
         }
-        push @text, $dura;
+        push @text, $match ? $dura : 'd' . $n;
+        $match = 0;
     }
 
     return join ' ', @text;
