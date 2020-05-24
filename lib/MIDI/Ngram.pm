@@ -382,7 +382,7 @@ sub process {
             $analysis .= "Track $i. Channel: $track_channel\n";
 
             # Declare the notes to inspect
-            my $text = '';
+            my $note_text = '';
 
             my @group;
             my $last;
@@ -391,7 +391,7 @@ sub process {
             for my $event ( @events ) {
                 # Transliterate MIDI note numbers to alpha-code
                 ( my $str = $event->[4] ) =~ tr/0-9/a-j/;
-                $text .= "$str ";
+                $note_text .= "$str ";
 
                 if (@group == $self->ngram_size) {
                     my $group = join ' ', @group;
@@ -403,7 +403,7 @@ sub process {
             }
 
             # Parse the note text into ngrams
-            my $ngram  = Lingua::EN::Ngram->new( text => $text );
+            my $ngram  = Lingua::EN::Ngram->new( text => $note_text );
             my $phrase = $ngram->ngram( $self->ngram_size );
 
             # Counter for the ngrams seen
@@ -427,9 +427,9 @@ sub process {
                 ( my $num = $p ) =~ tr/a-j/0-9/;
 
                 # Convert MIDI numbers to named notes.
-                my $text = _convert($num);
+                my $note_text = _convert($num);
 
-                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $text;
+                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $note_text;
 
                 # Save the number of times the phrase is repeated
                 $self->notes->{$track_channel}{$num} += $phrase->{$p};
@@ -498,9 +498,9 @@ sub populate {
                     );
 
                     # Convert MIDI numbers to named notes.
-                    my $text = _convert($choice);
+                    my $note_text = _convert($choice);
 
-                    $playback .= "\t$n\t$channel\t$choice $text\n";
+                    $playback .= "\t$n\t$channel\t$choice $note_text\n";
 
                     # Add each chosen note to the score
                     for my $note ( split /\s+/, $choice ) {
@@ -539,9 +539,9 @@ sub populate {
                 $n++;
 
                 # Convert MIDI numbers to named notes.
-                my $text = _convert($phrase);
+                my $note_text = _convert($phrase);
 
-                $playback .= "\t$n\t$channel\t$phrase $text\n";
+                $playback .= "\t$n\t$channel\t$phrase $note_text\n";
 
                 my @phrase = split /\s/, $phrase;
                 push @all, @phrase;
@@ -598,16 +598,16 @@ sub _random_patch {
 sub _convert {
     my $string = shift;
 
-    my $text = '( ';
+    my $note_text = '( ';
 
     for my $n ( split /\s+/, $string ) {
         my $note = Music::Note->new( $n, 'midinum' );
-        $text .= $note->format('midi') . ' ';
+        $note_text .= $note->format('midi') . ' ';
     }
 
-    $text .= ')';
+    $note_text .= ')';
 
-    return $text;
+    return $note_text;
 }
 
 sub _is_integer0 {
