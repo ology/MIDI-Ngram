@@ -7,6 +7,8 @@ use Test::Exception;
 
 use_ok 'MIDI::Ngram';
 
+my $filename = 'eg/twinkle_twinkle.mid';
+
 my $obj;
 
 throws_ok {
@@ -14,16 +16,72 @@ throws_ok {
 } qr/Missing required arguments: in_file/, 'file required';
 
 throws_ok {
-    MIDI::Ngram->new( in_file => 'eg/twinkle_twinkle.mid' )
+    MIDI::Ngram->new( in_file => $filename )
 } qr/Invalid list/, 'invalid in_file';
 
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], ngram_size => 0 )
+} qr/Invalid integer/, 'invalid ngram_size';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], max_phrases => -1 )
+} qr/Not greater than or equal to zero/, 'invalid max_phrases';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], bpm => 0 )
+} qr/Invalid integer/, 'invalid bpm';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], durations => 0 )
+} qr/Invalid list/, 'invalid durations';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], patches => 0 )
+} qr/Invalid list/, 'invalid patches';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], pause_duration => 0 )
+} qr/Invalid duration/, 'invalid pause_duration';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], analyze => 0 )
+} qr/Invalid list/, 'invalid analyze';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], loop => 0 )
+} qr/Invalid integer/, 'invalid loop';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], weight => 'foo' )
+} qr/Invalid Boolean/, 'invalid weight';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], random_patch => 'foo' )
+} qr/Invalid Boolean/, 'invalid random_patch';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], shuffle_phrases => 'foo' )
+} qr/Invalid Boolean/, 'invalid shuffle_phrases';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], single_phrases => 'foo' )
+} qr/Invalid Boolean/, 'invalid single_phrases';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], one_channel => 'foo' )
+} qr/Invalid Boolean/, 'invalid one_channel';
+
+throws_ok {
+    MIDI::Ngram->new( in_file => [$filename], bounds => 'foo' )
+} qr/Invalid Boolean/, 'invalid bounds';
+
 $obj = new_ok 'MIDI::Ngram' => [
-    in_file    => [ 'eg/twinkle_twinkle.mid' ],
+    in_file    => [$filename],
     ngram_size => 3,
     weight     => 1,
 ];
 
-is_deeply $obj->in_file, [ 'eg/twinkle_twinkle.mid' ], 'in_file';
+is_deeply $obj->in_file, [$filename], 'in_file';
 is $obj->ngram_size, 3, 'ngram_size';
 is $obj->max_phrases, 10, 'max_phrases';
 is $obj->bpm, 100, 'bpm';
@@ -67,7 +125,7 @@ $obj->populate;
 isa_ok $obj->score, 'MIDI::Simple';
 
 $obj = new_ok 'MIDI::Ngram' => [
-    in_file    => [ 'eg/twinkle_twinkle.mid' ],
+    in_file    => [$filename],
     ngram_size => 2,
 ];
 
