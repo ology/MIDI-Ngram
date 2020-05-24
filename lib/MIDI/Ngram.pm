@@ -384,8 +384,8 @@ sub process {
             # Declare the notes to inspect
             my $note_text = '';
 
-            my @group;
-            my $last;
+            my @note_group;
+            my $note_last;
 
             # Accumulate the notes
             for my $event ( @events ) {
@@ -393,13 +393,13 @@ sub process {
                 ( my $str = $event->[4] ) =~ tr/0-9/a-j/;
                 $note_text .= "$str ";
 
-                if (@group == $self->ngram_size) {
-                    my $group = join ' ', @group;
-                    $self->net->{ $last . '-' . $group }++ if $last;
-                    $last = $group;
-                    @group = ();
+                if (@note_group == $self->ngram_size) {
+                    my $group = join ' ', @note_group;
+                    $self->net->{ $note_last . '-' . $group }++ if $note_last;
+                    $note_last = $group;
+                    @note_group = ();
                 }
-                push @group, $event->[4];
+                push @note_group, $event->[4];
             }
 
             # Parse the note text into ngrams
