@@ -368,7 +368,7 @@ sub process {
                 && $_->[3] != 9     # Avoid the drum channel
             } @$score_r;
 
-            # XXX Assume that there is only one channel per track
+            # XXX Assume that there is only one channel per track :\
             my $track_channel = $self->one_channel ? 0 : $events[0][3];
 
             # Skip if there are no events and no channel
