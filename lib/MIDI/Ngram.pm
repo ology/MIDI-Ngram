@@ -12,7 +12,6 @@ use Carp;
 use Lingua::EN::Ngram;
 use List::Util qw( shuffle );
 use List::Util::WeightedChoice qw( choose_weighted );
-use MIDI::Simple;
 use MIDI::Util;
 use Music::Gestalt;
 use Music::Note;
