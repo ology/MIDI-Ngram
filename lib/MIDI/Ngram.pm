@@ -467,7 +467,7 @@ sub process {
                     $j, $dura_phrase->{$p}, $num, $text;
 
                 # Save the number of times the phrase is repeated
-                $self->dura->{$track_channel}{$num} += $dura_phrase->{$p};
+                $self->dura->{$track_channel}{$text} += $dura_phrase->{$p};
             }
 
             # Reset counter for the ngrams seen
