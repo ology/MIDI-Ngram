@@ -16,6 +16,15 @@ use GraphViz2;
 use MIDI::Ngram;
 use Music::Note;
 
+# General MIDI patches that are audible and aren't horrible
+my @patches = qw(
+    0 1 2 4 5 7 8 9
+    13 16 21 24 25 26
+    32 34 35 40 42 60
+    68 69 70 71 72 73
+    74 79
+);
+
 my %opts = (
     dir     => undef,    # Directory of MIDI files
     files   => undef,    # MIDI files to process
@@ -28,12 +37,13 @@ my %opts = (
     analyze => '',       # Analyze all channels
     loop    => 4,        # Times to choose a weighted phrase
     weight  => 0,        # Use weighted counts to play
-    ranp    => 0,        # Random patch instead of all piano
     shuf    => 0,        # Shuffle phrases
     single  => 0,        # Allow phrases seen only once
     one     => 0,        # Analyze phrases into one list
     bounds  => 0,        # Show pitch bounds
     thresh  => 10,       # Threshold to show net edges
+    ranp    => 0,        # Random patch instead of all piano
+    patches => join(' ', @patches),
 );
 GetOptions( \%opts, 
     'help|?',
@@ -49,12 +59,13 @@ GetOptions( \%opts,
     'analyze=s',
     'loop=i',
     'weight',
-    'ranp',
     'shuf',
     'single',
     'one',
     'bounds',
     'thresh=i',
+    'ranp',
+    'patches=s',
 ) or die 'Failed GetOptions';
 
 my @files;
@@ -65,15 +76,7 @@ my @files;
 $opts{files}   = @files ? \@files : [ split /(?:\s+|\s*,\s*)/, $opts{files} ];
 $opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ];
 $opts{analyze} = [ split /(?:\s+|\s*,\s*)/, $opts{analyze} ];
-
-# General MIDI patches that are audible and aren't horrible
-my @patches = qw(
-    0 1 2 4 5 7 8 9
-    13 16 21 24 25 26
-    32 34 35 40 42 60
-    68 69 70 71 72 73
-    74 79
-);
+$opts{patches} = [ split /(?:\s+|\s*,\s*)/, $opts{patches} ];
 
 my $mng = MIDI::Ngram->new(
     in_file         => $opts{files},
@@ -91,7 +94,7 @@ my $mng = MIDI::Ngram->new(
     single_phrases  => $opts{single},
     one_channel     => $opts{one},
     bounds          => $opts{bounds},
-    patches         => \@patches,
+    patches         => $opts{patches},
 );
 
 my $analysis = $mng->process;
