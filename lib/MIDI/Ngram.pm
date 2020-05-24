@@ -30,12 +30,24 @@ use Music::Note;
   );
 
   my $analysis = $mng->process;
-
-  print Dumper $mng->net;
+  print $analysis;
 
   my $playback = $mng->populate;
 
   $mng->write;
+
+  $mng = MIDI::Ngram->new(
+    in_file     => [ '/multi/channel/tune1.mid', '/multi/channel/tune2.mid' ],
+    ngram_size  => 3,
+    one_channel => 1,
+    out_file    => '',
+  );
+
+  $mng->process;
+
+  print Dumper $mng->notes->{0};
+
+  print Dumper $mng->net;
 
 =head1 DESCRIPTION
 
