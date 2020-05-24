@@ -461,9 +461,9 @@ sub process {
                 ( my $num = $p ) =~ tr/a-j/0-9/;
 
                 # Convert MIDI numbers to named notes.
-                my $dura_text = _dura_convert($num);
+                my $text = _dura_convert($num);
 
-                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $dura_phrase->{$p}, $num, $dura_text;
+                $analysis .= sprintf "\t%d\t%d\t%s (%s)\n", $j, $dura_phrase->{$p}, $num, $text;
 
                 # Save the number of times the phrase is repeated
                 $self->dura->{$track_channel}{$num} += $dura_phrase->{$p};
@@ -492,7 +492,7 @@ sub process {
                 # Convert MIDI numbers to named notes.
                 my $text = _note_convert($num);
 
-                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $note_phrase->{$p}, $num, $text;
+                $analysis .= sprintf "\t%d\t%d\t%s (%s)\n", $j, $note_phrase->{$p}, $num, $text;
 
                 # Save the number of times the phrase is repeated
                 $self->notes->{$track_channel}{$num} += $note_phrase->{$p};
@@ -661,7 +661,7 @@ sub _random_patch {
 sub _dura_convert {
     my $string = shift;
 
-    my $text = '( ';
+    my @text;
 
     for my $n ( split /\s+/, $string ) {
         my $dura = $n / 96 / 10;
@@ -671,28 +671,24 @@ sub _dura_convert {
                 last;
             }
         }
-        $text .= $dura . ' ';
+        push @text, $dura;
     }
 
-    $text .= ')';
-
-    return $text;
+    return join ' ', @text;
 }
 
 # Convert MIDI numbers to named notes.
 sub _note_convert {
     my $string = shift;
 
-    my $text = '( ';
+    my @text;
 
     for my $n ( split /\s+/, $string ) {
         my $note = Music::Note->new( $n, 'midinum' );
-        $text .= $note->format('midi') . ' ';
+        push @text, $note->format('midi');
     }
 
-    $text .= ')';
-
-    return $text;
+    return join ' ', @text;
 }
 
 sub _is_integer0 {
