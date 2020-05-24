@@ -41,7 +41,6 @@ use Music::Note;
   # Analyze multitrack tunes
   $mng = MIDI::Ngram->new(
     in_file     => [ '/multi/channel/tune1.mid', '/multi/channel/tune2.mid' ],
-    ngram_size  => 3,
     one_channel => 1,
   );
 
