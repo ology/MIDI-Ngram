@@ -403,16 +403,16 @@ sub process {
             }
 
             # Parse the note text into ngrams
-            my $ngram  = Lingua::EN::Ngram->new( text => $note_text );
-            my $phrase = $ngram->ngram( $self->ngram_size );
+            my $note_ngram = Lingua::EN::Ngram->new( text => $note_text );
+            my $note_phrase = $note_ngram->ngram( $self->ngram_size );
 
             # Counter for the ngrams seen
             my $j = 0;
 
             # Display the ngrams in order of their repetition amount
-            for my $p ( sort { $phrase->{$b} <=> $phrase->{$a} || $a cmp $b } keys %$phrase ) {
+            for my $p ( sort { $note_phrase->{$b} <=> $note_phrase->{$a} || $a cmp $b } keys %$note_phrase ) {
                 # Skip single occurance phrases if requested
-                next if !$self->single_phrases && $phrase->{$p} == 1;
+                next if !$self->single_phrases && $note_phrase->{$p} == 1;
 
                 # Don't allow phrases that are not the right size
                 my @items = grep { $_ } split /\s+/, $p;
@@ -429,10 +429,10 @@ sub process {
                 # Convert MIDI numbers to named notes.
                 my $note_text = _convert($num);
 
-                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $phrase->{$p}, $num, $note_text;
+                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $note_phrase->{$p}, $num, $note_text;
 
                 # Save the number of times the phrase is repeated
-                $self->notes->{$track_channel}{$num} += $phrase->{$p};
+                $self->notes->{$track_channel}{$num} += $note_phrase->{$p};
             }
 
             $analysis .= $self->_gestalt_analysis( \@events )
