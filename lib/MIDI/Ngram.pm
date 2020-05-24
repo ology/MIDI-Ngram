@@ -1,6 +1,6 @@
 package MIDI::Ngram;
 
-# ABSTRACT: Find the top repeated note phrases of a MIDI file
+# ABSTRACT: Find the top repeated note phrases of MIDI files
 
 our $VERSION = '0.1105';
 
