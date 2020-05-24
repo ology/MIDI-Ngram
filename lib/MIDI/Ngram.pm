@@ -148,6 +148,20 @@ has patches => (
     default => sub { [ 0 .. 127 ] },
 );
 
+=head2 random_patch
+
+Boolean.  Choose a random patch from B<patches> for each channel.
+
+Default: C<0> (meaning "use the piano patch")
+
+=cut
+
+has random_patch => (
+    is      => 'ro',
+    isa     => \&_is_boolean,
+    default => sub { 0 },
+);
+
 =head2 out_file
 
 MIDI output file.
@@ -214,20 +228,6 @@ Default: C<0>
 =cut
 
 has weight => (
-    is      => 'ro',
-    isa     => \&_is_boolean,
-    default => sub { 0 },
-);
-
-=head2 random_patch
-
-Boolean.  Choose a random patch from B<patches> for each channel.
-
-Default: C<0> (meaning "use the piano patch")
-
-=cut
-
-has random_patch => (
     is      => 'ro',
     isa     => \&_is_boolean,
     default => sub { 0 },
