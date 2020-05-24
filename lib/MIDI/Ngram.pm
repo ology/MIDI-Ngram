@@ -625,7 +625,7 @@ sub _is_list {
 
 sub _is_boolean {
     croak 'Invalid Boolean'
-        unless defined $_[0] && ( $_[0] == 1 || $_[0] == 0 );
+        unless defined $_[0] && $_[0] =~ /^\d$/ && ( $_[0] == 1 || $_[0] == 0 );
 }
 
 1;
