@@ -21,6 +21,7 @@ use Music::Note;
 
   use MIDI::Ngram;
 
+  # Analyze a tune and build a new MIDI file of repetitions
   my $mng = MIDI::Ngram->new(
     in_file      => [ 'eg/twinkle_twinkle.mid' ],
     ngram_size   => 3,
@@ -36,6 +37,7 @@ use Music::Note;
 
   $mng->write;
 
+  # Analyze multitrack tunes
   $mng = MIDI::Ngram->new(
     in_file     => [ '/multi/channel/tune1.mid', '/multi/channel/tune2.mid' ],
     ngram_size  => 3,
@@ -44,8 +46,14 @@ use Music::Note;
 
   $mng->process;
 
-  print Dumper $mng->notes->{0};
+  # Dump out the phrases in order
+  print Dumper [
+    map { "$_ => " . $mng->notes->{0}{$_} }
+      sort { $mng->notes->{0}{$a} <=> $mng->notes->{0}{$b} }
+        keys %{ $mng->notes->{0} }
+  ];
 
+  # Inspect the phrase transition network
   print Dumper $mng->net;
 
 =head1 DESCRIPTION
