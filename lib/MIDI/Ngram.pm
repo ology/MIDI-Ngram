@@ -34,6 +34,7 @@ use Music::Note;
   print $analysis;
 
   my $playback = $mng->populate;
+  print $playback;
 
   $mng->write;
 
