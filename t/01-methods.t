@@ -10,11 +10,11 @@ use_ok 'MIDI::Ngram';
 my $obj;
 
 throws_ok {
-    $obj = MIDI::Ngram->new
+    MIDI::Ngram->new
 } qr/Missing required arguments: in_file/, 'file required';
 
 throws_ok {
-    $obj = MIDI::Ngram->new( in_file => 'eg/twinkle_twinkle.mid' )
+    MIDI::Ngram->new( in_file => 'eg/twinkle_twinkle.mid' )
 } qr/Invalid list/, 'invalid in_file';
 
 $obj = new_ok 'MIDI::Ngram' => [
