@@ -10,7 +10,7 @@ use namespace::clean;
 
 use Carp;
 use Lingua::EN::Ngram;
-use List::Util qw( shuffle );
+use List::Util qw( shuffle uniq );
 use List::Util::WeightedChoice qw( choose_weighted );
 use MIDI::Util;
 use Music::Gestalt;
@@ -127,16 +127,19 @@ has bpm => (
 
 =head2 durations
 
-The note durations to choose from (at random).
+The optional MIDI note durations to choose from (at random).
 
-Default: C<[hn qn en]>
+Default: C<[]> (i.e. use the computed B<dura> phrases instead)
+
+Using a setting of C<['qn']> allows you to evenly inspect the phrases
+during audio playback.
 
 =cut
 
 has durations => (
     is      => 'ro',
     isa     => \&_is_list,
-    default => sub { [qw( hn qn en )] },
+    default => sub { [] },
 );
 
 =head2 patches
@@ -334,6 +337,12 @@ has dura => (
     default  => sub { {} },
 );
 
+has _dura_list => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub { {} },
+);
+
 =head2 net
 
 A hash-reference ngram transition network.  Constructed by the
@@ -472,6 +481,17 @@ sub process {
                 $self->dura->{$track_channel}{$text} += $dura_phrase->{$p};
             }
 
+            unless (@{ $self->durations }) {
+                # Build the known durations set
+                for my $channel (keys %{ $self->dura }) {
+                    for my $duras (keys %{ $self->dura->{$channel} }) {
+                        my @duras = split / /, $duras;
+                        push @{ $self->_dura_list->{$channel} }, @duras;
+                    }
+                    $self->_dura_list->{$channel} = [ uniq @{ $self->_dura_list->{$channel} } ];
+                }
+            }
+
             # Reset counter for the ngrams seen
             $j = 0;
 
@@ -573,8 +593,9 @@ sub populate {
 
                     # Add each chosen note to the score
                     for my $note ( split /\s+/, $choice ) {
-                        # XXX This is not sophisticated at all
-                        my $duration = $self->durations->[ int rand @{ $self->durations } ];
+                        my $duration = @{ $self->durations }
+                            ? $self->durations->[ int rand @{ $self->durations } ]
+                            : $self->_dura_list->{$channel}[ int rand @{ $self->_dura_list->{$channel} } ];
                         $self->score->n( $duration, $note );
                     }
 
@@ -629,8 +650,9 @@ sub populate {
                         $self->score->r( $self->pause_duration );
                     }
                     else {
-                        # XXX This is not sophisticated at all
-                        my $duration = $self->durations->[ int rand @{ $self->durations } ];
+                        my $duration = @{ $self->durations }
+                            ? $self->durations->[ int rand @{ $self->durations } ]
+                            : $self->_dura_list->{$channel}[ int rand @{ $self->_dura_list->{$channel} } ];
                         $self->score->n( $duration, $note );
                     }
                 }
@@ -726,10 +748,6 @@ sub _is_boolean {
 
 1;
 __END__
-
-=head1 TO DO
-
-Preserve note durations instead of random assignment.
 
 =head1 SEE ALSO
 

@@ -83,7 +83,7 @@ is_deeply $obj->in_file, [$filename], 'in_file';
 is $obj->ngram_size, 3, 'ngram_size';
 is $obj->max_phrases, 10, 'max_phrases';
 is $obj->bpm, 100, 'bpm';
-is_deeply $obj->durations, [qw(hn qn en)], 'durations';
+is_deeply $obj->durations, [], 'durations';
 is_deeply $obj->patches, [0 .. 127], 'patches';
 is $obj->out_file, 'midi-ngram.mid', 'out_file';
 ok !$obj->pause_duration, 'pause_duration';
@@ -132,6 +132,8 @@ $expected = {
 };
 
 is_deeply $obj->dura, $expected, 'processed durations';
+
+is_deeply [ sort @{ $obj->_dura_list->{0} } ], ['hn','qn'], '_dura_list';
 
 $obj->populate;
 
