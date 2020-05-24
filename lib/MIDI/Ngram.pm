@@ -427,9 +427,9 @@ sub process {
                 ( my $num = $p ) =~ tr/a-j/0-9/;
 
                 # Convert MIDI numbers to named notes.
-                my $note_text = _note_convert($num);
+                my $text = _note_convert($num);
 
-                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $note_phrase->{$p}, $num, $note_text;
+                $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $note_phrase->{$p}, $num, $text;
 
                 # Save the number of times the phrase is repeated
                 $self->notes->{$track_channel}{$num} += $note_phrase->{$p};
