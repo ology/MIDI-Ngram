@@ -45,7 +45,14 @@ use Music::Note;
 
   $mng->process;
 
-  # Dump out the phrases in order
+  # Dump out the duration phrases in order
+  print Dumper [
+    map { "$_ => " . $mng->dura->{0}{$_} }
+      sort { $mng->dura->{0}{$a} <=> $mng->dura->{0}{$b} }
+        keys %{ $mng->dura->{0} }
+  ];
+
+  # Dump out the note phrases in order
   print Dumper [
     map { "$_ => " . $mng->notes->{0}{$_} }
       sort { $mng->notes->{0}{$a} <=> $mng->notes->{0}{$b} }
