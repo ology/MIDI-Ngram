@@ -360,15 +360,16 @@ sub process {
 
         # Handle each track...
         for my $t ( $opus->tracks ) {
+            my $score_r = MIDI::Score::events_r_to_score_r( [$t->events] );
+
             # Collect the note events for each track
             my @events = grep {
-                $_->[0] eq 'note_on'    # Only consider note_on events
-                && $_->[2] != 9         # Avoid the drum channel
-                && $_->[4] != 0         # Ignore events of velocity 0
-            } $t->events;
+                $_->[0] eq 'note'
+                && $_->[3] != 9     # Avoid the drum channel
+            } @$score_r;
 
             # XXX Assume that there is one channel per track
-            my $track_channel = $self->one_channel ? 0 : $events[0][2];
+            my $track_channel = $self->one_channel ? 0 : $events[0][3];
 
             # Skip if there are no events and no channel
             next unless @events && defined $track_channel;
@@ -389,7 +390,7 @@ sub process {
             # Accumulate the notes
             for my $event ( @events ) {
                 # Transliterate MIDI note numbers to alpha-code
-                ( my $str = $event->[3] ) =~ tr/0-9/a-j/;
+                ( my $str = $event->[4] ) =~ tr/0-9/a-j/;
                 $text .= "$str ";
 
                 if (@group == $self->ngram_size) {
@@ -398,7 +399,7 @@ sub process {
                     $last = $group;
                     @group = ();
                 }
-                push @group, $event->[3];
+                push @group, $event->[4];
             }
 
             # Parse the note text into ngrams
