@@ -463,7 +463,8 @@ sub process {
                 # Convert MIDI numbers to named notes.
                 my $text = _dura_convert($num);
 
-                $analysis .= sprintf "\t%d\t%d\t%s (%s)\n", $j, $dura_phrase->{$p}, $num, $text;
+                $analysis .= sprintf "\t%d\t%d\t%s (%s)\n",
+                    $j, $dura_phrase->{$p}, $num, $text;
 
                 # Save the number of times the phrase is repeated
                 $self->dura->{$track_channel}{$num} += $dura_phrase->{$p};
@@ -492,7 +493,8 @@ sub process {
                 # Convert MIDI numbers to named notes.
                 my $text = _note_convert($num);
 
-                $analysis .= sprintf "\t%d\t%d\t%s (%s)\n", $j, $note_phrase->{$p}, $num, $text;
+                $analysis .= sprintf "\t%d\t%d\t%s (%s)\n",
+                    $j, $note_phrase->{$p}, $num, $text;
 
                 # Save the number of times the phrase is repeated
                 $self->notes->{$track_channel}{$num} += $note_phrase->{$p};
