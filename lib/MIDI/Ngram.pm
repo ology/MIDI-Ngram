@@ -96,6 +96,8 @@ The maximum number of phrases to analyze/play.
 
 Default: C<10>
 
+Setting this to a value of C<0> analyzes all phrases.
+
 =cut
 
 has max_phrases => (
