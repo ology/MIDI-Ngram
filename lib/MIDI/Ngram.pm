@@ -427,7 +427,7 @@ sub process {
                 ( my $num = $p ) =~ tr/a-j/0-9/;
 
                 # Convert MIDI numbers to named notes.
-                my $note_text = _convert($num);
+                my $note_text = _note_convert($num);
 
                 $analysis .= sprintf "\t%d\t%d\t%s %s\n", $j, $note_phrase->{$p}, $num, $note_text;
 
@@ -498,7 +498,7 @@ sub populate {
                     );
 
                     # Convert MIDI numbers to named notes.
-                    my $note_text = _convert($choice);
+                    my $note_text = _note_convert($choice);
 
                     $playback .= "\t$n\t$channel\t$choice $note_text\n";
 
@@ -539,7 +539,7 @@ sub populate {
                 $n++;
 
                 # Convert MIDI numbers to named notes.
-                my $note_text = _convert($phrase);
+                my $note_text = _note_convert($phrase);
 
                 $playback .= "\t$n\t$channel\t$phrase $note_text\n";
 
@@ -595,7 +595,7 @@ sub _random_patch {
 }
 
 # Convert MIDI numbers to named notes.
-sub _convert {
+sub _note_convert {
     my $string = shift;
 
     my $note_text = '( ';
