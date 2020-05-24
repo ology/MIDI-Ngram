@@ -460,7 +460,7 @@ sub process {
                 # Transliterate our letter code back to MIDI note numbers
                 ( my $num = $p ) =~ tr/a-j/0-9/;
 
-                # Convert MIDI numbers to named notes.
+                # Convert MIDI numbers to named durations.
                 my $text = _dura_convert($num);
 
                 $analysis .= sprintf "\t%d\t%d\t%s (%s)\n",
