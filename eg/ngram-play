@@ -41,6 +41,7 @@ my %opts = (
     single  => 0,        # Allow phrases seen only once
     one     => 0,        # Analyze phrases into one list
     bounds  => 0,        # Show pitch bounds
+    image   => 0,        # Output GraphViz network diagram
     thresh  => 10,       # Threshold to show net edges
     ranp    => 0,        # Random patch instead of all piano
     patches => join(' ', @patches),
@@ -63,6 +64,7 @@ GetOptions( \%opts,
     'single',
     'one',
     'bounds',
+    'image',
     'thresh=i',
     'ranp',
     'patches=s',
@@ -106,6 +108,8 @@ if ( $opts{out} ) {
 
     $mng->write;
 }
+
+exit unless $opts{image};
 
 my $g = GraphViz2->new(
     global => { directed => 1 },
