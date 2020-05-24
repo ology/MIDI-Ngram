@@ -443,6 +443,8 @@ sub process {
             # Counter for the ngrams seen
             my $j = 0;
 
+            $analysis .= "\tDurations:\n";
+
             # Display the ngrams in order of their repetition amount
             for my $p ( sort { $dura_phrase->{$b} <=> $dura_phrase->{$a} || $a cmp $b } keys %$dura_phrase ) {
                 # Skip single occurance phrases if requested
@@ -472,6 +474,8 @@ sub process {
 
             # Reset counter for the ngrams seen
             $j = 0;
+
+            $analysis .= "\tNotes:\n";
 
             # Display the ngrams in order of their repetition amount
             for my $p ( sort { $note_phrase->{$b} <=> $note_phrase->{$a} || $a cmp $b } keys %$note_phrase ) {
