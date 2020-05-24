@@ -669,6 +669,7 @@ sub _dura_convert {
 
     for my $n ( split /\s+/, $string ) {
         my $dura = $n / 96 / 10;
+
         for my $key (keys %MIDI::Simple::Length) {
             if (sprintf('%.4f', $MIDI::Simple::Length{$key}) eq sprintf('%.4f', $dura)) {
                 $match++;
@@ -676,7 +677,9 @@ sub _dura_convert {
                 last;
             }
         }
+
         push @text, $match ? $dura : 'd' . $n;
+
         $match = 0;
     }
 
