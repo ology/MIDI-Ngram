@@ -2,6 +2,7 @@ Revision history for MIDI-Ngram
 
 {{$NEXT}}
     - Replace AWOL playback text output parens.
+    - Update documentation.
 
 0.1400 2020-05-25 11:05:26
     - Make the duration and note convert routines proper methods.
