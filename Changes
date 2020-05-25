@@ -1,6 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Add a crucial Prereqs section to the dist.ini.
+
+0.1200 2020-05-24 17:06:30
     - Improve eg/ngram-play.
     - Process and play phrase durations.
 
