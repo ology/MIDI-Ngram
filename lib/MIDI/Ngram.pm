@@ -72,6 +72,10 @@ C<MIDI::Ngram> parses a given list of MIDI files, finds the top
 repeated note phrases, builds the analysis, transition network, and
 renders to a MIDI file if desired.
 
+Currently, this only works right for MIDI files with channels of
+B<single notes>.  Channels with simultaneous notes (as in, chords) are
+not handled correctly. Ugh!
+
 =head1 ATTRIBUTES
 
 =head2 in_file
