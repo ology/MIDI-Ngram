@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # Make a new MIDI file of the top repeated note phrases of a list of
-# MIDI files or a directory, and make a transition network diagram.
+# MIDI files or a directory, and make a transition note network diagram.
 #
 # Examples:
 # perl ngram-play --files ~/Music/moonlight.mid --size 3 --max 16 --shuf --pause en
@@ -120,8 +120,8 @@ my $g = GraphViz2->new(
 
 my %edges;
 
-for my $edge ( keys %{ $mng->net } ) {
-    next unless $mng->net->{$edge} >= $opts{thresh};
+for my $edge ( keys %{ $mng->note_net } ) {
+    next unless $mng->note_net->{$edge} >= $opts{thresh};
 
     # Split the edge in two
     my ($i, $j) = split '-', $edge;
@@ -140,7 +140,7 @@ for my $edge ( keys %{ $mng->net } ) {
     }
     $j = join ' ', @notes;
 
-    $g->add_edge(from => $i, to => $j, label => $mng->net->{$edge})
+    $g->add_edge(from => $i, to => $j, label => $mng->note_net->{$edge})
         unless $edges{$edge}++;
 }
 
