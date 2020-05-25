@@ -617,7 +617,7 @@ sub populate {
                     # Convert MIDI numbers to named notes.
                     my $note_text = $self->note_convert($choice);
 
-                    $playback .= "\t$n\t$channel\t$choice $note_text\n";
+                    $playback .= "\t$n\t$channel\t$choice ($note_text)\n";
 
                     # Add each chosen note to the score
                     for my $note ( split /\s+/, $choice ) {
@@ -659,7 +659,7 @@ sub populate {
                 # Convert MIDI numbers to named notes.
                 my $note_text = $self->note_convert($phrase);
 
-                $playback .= "\t$n\t$channel\t$phrase $note_text\n";
+                $playback .= "\t$n\t$channel\t$phrase ($note_text)\n";
 
                 my @phrase = split /\s/, $phrase;
                 push @all, @phrase;
