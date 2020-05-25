@@ -58,8 +58,9 @@ use Music::Note;
         keys %{ $mng->notes->{0} }
   ];
 
-  # Inspect the phrase transition network
-  print Dumper $mng->net;
+  # Inspect the phrase transition networks
+  print Dumper $mng->dura_net;
+  print Dumper $mng->note_net;
 
 =head1 DESCRIPTION
 
@@ -343,14 +344,27 @@ has _dura_list => (
     default  => sub { {} },
 );
 
-=head2 net
+=head2 dura_net
 
-A hash-reference ngram transition network.  Constructed by the
-B<process> method.
+A hash-reference ngram transition network of the durations.
+Constructed by the B<process> method.
 
 =cut
 
-has net => (
+has dura_net => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub { {} },
+);
+
+=head2 note_net
+
+A hash-reference ngram transition network of the notes.  Constructed
+by the B<process> method.
+
+=cut
+
+has note_net => (
     is       => 'ro',
     init_arg => undef,
     default  => sub { {} },
@@ -425,6 +439,8 @@ sub process {
 
             my @note_group;
             my $note_last;
+            my @dura_group;
+            my $dura_last;
 
             # Accumulate the notes
             for my $event ( @events ) {
@@ -434,9 +450,17 @@ sub process {
                 ( $str = $event->[4] ) =~ tr/0-9/a-j/;
                 $note_text .= "$str ";
 
+                if (@dura_group == $self->ngram_size) {
+                    my $group = join ' ', @dura_group;
+                    $self->dura_net->{ $dura_last . '-' . $group }++ if $dura_last;
+                    $dura_last = $group;
+                    @dura_group = ();
+                }
+                push @dura_group, $event->[2];
+
                 if (@note_group == $self->ngram_size) {
                     my $group = join ' ', @note_group;
-                    $self->net->{ $note_last . '-' . $group }++ if $note_last;
+                    $self->note_net->{ $note_last . '-' . $group }++ if $note_last;
                     $note_last = $group;
                     @note_group = ();
                 }

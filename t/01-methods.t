@@ -96,9 +96,10 @@ ok !$obj->single_phrases, 'single_phrases';
 ok !$obj->one_channel, 'one_channel';
 ok !$obj->bounds, 'bounds';
 is $obj->score, undef, 'score';
-is_deeply $obj->notes, {}, 'notes';
 is_deeply $obj->dura, {}, 'notes';
-is_deeply $obj->net, {}, 'net';
+is_deeply $obj->notes, {}, 'notes';
+is_deeply $obj->dura_net, {}, 'dura_net';
+is_deeply $obj->note_net, {}, 'note_net';
 
 $obj->process;
 
@@ -147,6 +148,21 @@ $obj = new_ok 'MIDI::Ngram' => [
 $obj->process;
 
 $expected = {
+  '1920 1920-960 1920' => 1,
+  '1920 960-1920 1920' => 1,
+  '1920 960-1920 960'  => 3,
+  '1920 960-960 1920'  => 6,
+  '960 1920-1920 960'  => 3,
+  '960 1920-960 1920'  => 3,
+  '960 1920-960 960'   => 7,
+  '960 960-1920 960'   => 4,
+  '960 960-960 1920'   => 3,
+  '960 960-960 960'    => 2,
+};
+
+is_deeply $obj->dura_net, $expected, 'dura_net';
+
+$expected = {
   '50 65-64 48' => 2,
   '52 48-67 52' => 1,
   '52 65-50 65' => 2,
@@ -172,6 +188,6 @@ $expected = {
   '69 67-52 65' => 2,
 };
 
-is_deeply $obj->net, $expected, 'net';
+is_deeply $obj->note_net, $expected, 'note_net';
 
 done_testing();

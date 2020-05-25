@@ -1,6 +1,9 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Compute the duration transition network.
+
+0.1201 2020-05-25 09:17:14
     - Add a crucial Prereqs section to the dist.ini.
 
 0.1200 2020-05-24 17:06:30
