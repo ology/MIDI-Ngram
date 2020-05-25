@@ -62,6 +62,10 @@ use Music::Note;
   print Dumper $mng->dura_net;
   print Dumper $mng->note_net;
 
+  # Convert a MIDI number string to a duration or note name.
+  my $named = $mng->dura_convert('1920');
+  $named = $mng->note_convert('60 61');
+
 =head1 DESCRIPTION
 
 C<MIDI::Ngram> parses a given list of MIDI files, finds the top
@@ -496,7 +500,7 @@ sub process {
                 ( my $num = $p ) =~ tr/a-j/0-9/;
 
                 # Convert MIDI numbers to named durations.
-                my $text = _dura_convert($num);
+                my $text = $self->dura_convert($num);
 
                 $analysis .= sprintf "\t%d\t%d\t%s (%s)\n",
                     $j, $dura_phrase->{$p}, $num, $text;
@@ -539,7 +543,7 @@ sub process {
                 ( my $num = $p ) =~ tr/a-j/0-9/;
 
                 # Convert MIDI numbers to named notes.
-                my $text = _note_convert($num);
+                my $text = $self->note_convert($num);
 
                 $analysis .= sprintf "\t%d\t%d\t%s (%s)\n",
                     $j, $note_phrase->{$p}, $num, $text;
@@ -611,7 +615,7 @@ sub populate {
                     );
 
                     # Convert MIDI numbers to named notes.
-                    my $note_text = _note_convert($choice);
+                    my $note_text = $self->note_convert($choice);
 
                     $playback .= "\t$n\t$channel\t$choice $note_text\n";
 
@@ -653,7 +657,7 @@ sub populate {
                 $n++;
 
                 # Convert MIDI numbers to named notes.
-                my $note_text = _note_convert($phrase);
+                my $note_text = $self->note_convert($phrase);
 
                 $playback .= "\t$n\t$channel\t$phrase $note_text\n";
 
@@ -704,14 +708,16 @@ sub write {
     $self->score->write_score( $self->out_file );
 }
 
-sub _random_patch {
-    my ($self) = @_;
-    return $self->patches->[ int rand @{ $self->patches } ];
-}
+=head2 dura_convert
 
-# Convert MIDI numbers to named durations.
-sub _dura_convert {
-    my $string = shift;
+  $durations = $mng->dura_convert($string);
+
+Convert MIDI numbers to named durations.
+
+=cut
+
+sub dura_convert {
+    my ($self, $string) = @_;
 
     my @text;
 
@@ -736,9 +742,16 @@ sub _dura_convert {
     return join ' ', @text;
 }
 
-# Convert MIDI numbers to named notes.
-sub _note_convert {
-    my $string = shift;
+=head2 note_convert
+
+  $notes = $mng->note_convert($string);
+
+Convert MIDI numbers to named notes.
+
+=cut
+
+sub note_convert {
+    my ($self, $string) = @_;
 
     my @text;
 
@@ -748,6 +761,11 @@ sub _note_convert {
     }
 
     return join ' ', @text;
+}
+
+sub _random_patch {
+    my ($self) = @_;
+    return $self->patches->[ int rand @{ $self->patches } ];
 }
 
 sub _is_integer0 {

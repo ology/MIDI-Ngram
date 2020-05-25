@@ -190,4 +190,8 @@ $expected = {
 
 is_deeply $obj->note_net, $expected, 'note_net';
 
+is $obj->dura_convert('1920'), 'hn', 'dura_convert';
+
+is $obj->note_convert('60 61'), 'C4 Cs4', 'note_convert';
+
 done_testing();
