@@ -74,13 +74,12 @@ throws_ok {
 } qr/Invalid Boolean/, 'invalid bounds';
 
 my $obj = new_ok 'MIDI::Ngram' => [
-    in_file    => [$filename],
-    ngram_size => 3,
-    weight     => 1,
+    in_file => [$filename],
+    weight  => 1,
 ];
 
 is_deeply $obj->in_file, [$filename], 'in_file';
-is $obj->ngram_size, 3, 'ngram_size';
+is $obj->ngram_size, 2, 'ngram_size';
 is $obj->max_phrases, 10, 'max_phrases';
 is $obj->bpm, 100, 'bpm';
 is_deeply $obj->durations, [], 'durations';
@@ -98,23 +97,21 @@ ok !$obj->bounds, 'bounds';
 is $obj->score, undef, 'score';
 is_deeply $obj->dura, {}, 'notes';
 is_deeply $obj->notes, {}, 'notes';
-is_deeply $obj->dura_net, {}, 'dura_net';
-is_deeply $obj->note_net, {}, 'note_net';
 
 $obj->process;
 
 my $expected = {
     0 => {
-        '67 52 67' => 4,
-        '62 55 60' => 3,
-        '48 60 67' => 2,
-        '48 64 62' => 2,
-        '50 65 64' => 2,
-        '52 65 50' => 2,
-        '52 67 65' => 2,
-        '52 67 69' => 2,
-        '53 62 55' => 2,
-        '53 65 64' => 2,
+        'C4 G4,E3'    => 2,
+        'C4,C3 C4'    => 2,
+        'D4,F3 D4,G3' => 2,
+        'D4,G3 C4,C3' => 2,
+        'E4 D4,F3'    => 2,
+        'E4 D4,G3'    => 2,
+        'E4,C3 E4'    => 2,
+        'E4,G3 E4'    => 2,
+        'F4 E4,C3'    => 2,
+        'G4,E3 G4'    => 4,
     }
 };
 
@@ -122,13 +119,12 @@ is_deeply $obj->notes, $expected, 'processed notes';
 
 $expected = {
     0 => {
-        'hn hn qn' => 4,
-        'hn qn hn' => 8,
-        'hn qn qn' => 13,
-        'qn hn hn' => 5,
-        'qn hn qn' => 17,
-        'qn qn hn' => 13,
-        'qn qn qn' => 7,
+        'hn,hn qn,hn' => 4,
+        'qn hn,hn'    => 4,
+        'qn qn,hn'    => 11,
+        'qn qn,qn'    => 2,
+        'qn,hn qn'    => 16,
+        'qn,qn qn,qn' => 2,
     }
 };
 
@@ -141,57 +137,54 @@ $obj->populate;
 isa_ok $obj->score, 'MIDI::Simple';
 
 $obj = new_ok 'MIDI::Ngram' => [
-    in_file    => [$filename],
-    ngram_size => 2,
+    in_file => [$filename],
 ];
 
 $obj->process;
 
 $expected = {
-  '1920 1920-960 1920' => 1,
-  '1920 960-1920 1920' => 1,
-  '1920 960-1920 960'  => 3,
-  '1920 960-960 1920'  => 6,
-  '960 1920-1920 960'  => 3,
-  '960 1920-960 1920'  => 3,
-  '960 1920-960 960'   => 7,
-  '960 960-1920 960'   => 4,
-  '960 960-960 1920'   => 3,
-  '960 960-960 960'    => 2,
+    'hn,hn qn,hn-qn qn,hn' => 2,
+    'qn hn,hn-qn,hn qn'    => 2,
+    'qn qn,hn-qn hn,hn'    => 2,
+    'qn qn,hn-qn qn,hn'    => 3,
+    'qn qn,hn-qn qn,qn'    => 1,
+    'qn qn,qn-qn,qn hn,qn' => 1,
+    'qn,hn qn-hn,hn qn,hn' => 2,
+    'qn,hn qn-qn,hn qn'    => 5,
+    'qn,hn qn-qn,qn qn,qn' => 1,
+    'qn,qn hn,qn-qn qn,hn' => 1,
 };
 
-is_deeply $obj->dura_net, $expected, 'dura_net';
+is_deeply $obj->dura_net->{0}, $expected, 'dura_net';
 
 $expected = {
-  '50 65-64 48' => 2,
-  '52 48-67 52' => 1,
-  '52 65-50 65' => 2,
-  '52 67-65 53' => 1,
-  '52 67-69 53' => 2,
-  '53 62-55 60' => 2,
-  '53 65-64 55' => 1,
-  '55 60-52 48' => 1,
-  '55 64-62 55' => 1,
-  '55 67-52 67' => 1,
-  '60 48-60 67' => 2,
-  '60 67-52 67' => 2,
-  '62 55-60 48' => 1,
-  '64 48-64 62' => 2,
-  '64 55-64 62' => 1,
-  '64 62-53 62' => 2,
-  '64 62-55 67' => 1,
-  '65 53-65 64' => 1,
-  '65 64-55 64' => 1,
-  '67 52-67 65' => 1,
-  '67 65-53 65' => 1,
-  '69 53-69 67' => 2,
-  '69 67-52 65' => 2,
+    'A4 G4,E3-F4,D3 F4'    => 1,
+    'A4,F3 A4-G4,E3 F4,D3' => 1,
+    'C3 G4,E3-G4 F4,F3'    => 1,
+    'C4 G4,E3-G4 A4,F3'    => 1,
+    'C4,C3 C4-G4,E3 G4'    => 1,
+    'D4,G3 C4,C3-C4 G4,E3' => 1,
+    'D4,G3 C4,E3-C3 G4,E3' => 1,
+    'E4 D4,F3-D4,G3 C4,E3' => 1,
+    'E4 D4,G3-G4,E3 G4'    => 1,
+    'E4,C3 E4-D4,F3 D4,G3' => 1,
+    'E4,G3 E4-D4,G3 C4,C3' => 1,
+    'F4 E4,C3-E4 D4,F3'    => 1,
+    'F4 E4,G3-E4 D4,G3'    => 1,
+    'F4,D3 F4-E4,C3 E4'    => 1,
+    'F4,F3 F4-E4,G3 E4'    => 1,
+    'G4 A4,F3-A4 G4,E3'    => 1,
+    'G4 F4,F3-F4 E4,G3'    => 1,
+    'G4,E3 F4,D3-F4 E4,C3' => 1,
+    'G4,E3 G4-A4,F3 A4'    => 1,
+    'G4,E3 G4-F4,F3 F4'    => 1,
 };
 
-is_deeply $obj->note_net, $expected, 'note_net';
+is_deeply $obj->note_net->{0}, $expected, 'note_net';
 
 is $obj->dura_convert('1920'), 'hn', 'dura_convert';
-
+is $obj->dura_convert('960,1920'), 'qn,hn', 'dura_convert';
 is $obj->note_convert('60 61'), 'C4 Cs4', 'note_convert';
+is $obj->note_convert('60 61,62'), 'C4 Cs4,D4', 'note_convert';
 
 done_testing();
