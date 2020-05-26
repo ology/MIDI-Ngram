@@ -130,12 +130,6 @@ $obj->populate;
 
 isa_ok $obj->score, 'MIDI::Simple';
 
-$obj = new_ok 'MIDI::Ngram' => [
-    in_file => [$filename],
-];
-
-$obj->process;
-
 $expected = {
     'hn,hn qn,hn-qn qn,hn' => 2,
     'qn hn,hn-qn,hn qn'    => 2,
