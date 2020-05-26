@@ -44,18 +44,18 @@ use Music::Note;
 
   $mng->process;
 
-  # Dump out the channel 0 duration phrases in order
+  # Dump out the track and channel 0 duration phrases in order
   print Dumper [
-    map { "$_ => " . $mng->dura->{0}{$_} }
-      sort { $mng->dura->{0}{$a} <=> $mng->dura->{0}{$b} }
-        keys %{ $mng->dura->{0} }
+    map { "$_ => " . $mng->dura->{0}{0}{$_} }
+      sort { $mng->dura->{0}{0}{$a} <=> $mng->dura->{0}{0}{$b} }
+        keys %{ $mng->dura->{0}{0} }
   ];
 
-  # Dump out the channel 0 note phrases in order
+  # Dump out the track and channel 0 note phrases in order
   print Dumper [
-    map { "$_ => " . $mng->notes->{0}{$_} }
-      sort { $mng->notes->{0}{$a} <=> $mng->notes->{0}{$b} }
-        keys %{ $mng->notes->{0} }
+    map { "$_ => " . $mng->notes->{0}{0}{$_} }
+      sort { $mng->notes->{0}{0}{$a} <=> $mng->notes->{0}{0}{$b} }
+        keys %{ $mng->notes->{0}{0} }
   ];
 
   # Inspect the phrase transition networks
