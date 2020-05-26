@@ -13,7 +13,6 @@ use Lingua::EN::Ngram;
 use List::Util qw( shuffle uniq );
 use List::Util::WeightedChoice qw( choose_weighted );
 use MIDI::Util;
-use Music::Gestalt;
 use Music::Note;
 
 =head1 SYNOPSIS
@@ -29,42 +28,23 @@ use Music::Note;
     bounds       => 1,
   );
 
-  my $analysis = $mng->process;
-  print $analysis;
+  $mng->process;
+
+  # Analyze
+  print Dumper $mng->duras;
+  print Dumper $mng->notes;
+
+  print Dumper $mng->dura_net;
+  print Dumper $mng->note_net;
 
   my $playback = $mng->populate;
   print $playback;
 
   $mng->write;
 
-  # Analyze multitrack tunes
-  $mng = MIDI::Ngram->new(
-    in_file => [ '/multi/channel/tune1.mid', '/multi/channel/tune2.mid' ],
-  );
-
-  $mng->process;
-
-  # Dump out the track and channel 0 duration phrases in order
-  print Dumper [
-    map { "$_ => " . $mng->dura->{0}{0}{$_} }
-      sort { $mng->dura->{0}{0}{$a} <=> $mng->dura->{0}{0}{$b} }
-        keys %{ $mng->dura->{0}{0} }
-  ];
-
-  # Dump out the track and channel 0 note phrases in order
-  print Dumper [
-    map { "$_ => " . $mng->notes->{0}{0}{$_} }
-      sort { $mng->notes->{0}{0}{$a} <=> $mng->notes->{0}{0}{$b} }
-        keys %{ $mng->notes->{0}{0} }
-  ];
-
-  # Inspect the phrase transition networks
-  print Dumper $mng->dura_net;
-  print Dumper $mng->note_net;
-
   # Convert a MIDI number string to a duration or note name.
-  my $named = $mng->dura_convert('1920');
-  $named = $mng->note_convert('60 61');
+  my $named = $mng->dura_convert('96');
+  $named = $mng->note_convert('60 61,62');
 
 =head1 DESCRIPTION
 
@@ -320,6 +300,10 @@ has score => (
     lazy     => 1,
 );
 
+has _opus_ticks => (
+    is => 'rw',
+);
+
 =head2 notes
 
 The hash-reference bucket of pitch ngrams.  Constructed by the
@@ -332,6 +316,43 @@ has notes => (
     init_arg => undef,
     default  => sub { {} },
 );
+
+has _note_list => (
+    is       => 'ro',
+    init_arg => undef,
+    lazy     => 1,
+    builder  => 1,
+);
+
+sub _build__note_list {
+    my ($self) = @_;
+
+    my %events;
+
+    for my $file ( @{ $self->in_file } ) {
+        my $opus = MIDI::Opus->new({ from_file => $file });
+
+        # XXX Assume that all files have the same MIDI ppqn
+        $self->_opus_ticks($opus->ticks)
+            unless $self->_opus_ticks;
+
+        for my $t ( $opus->tracks ) {
+            my $score_r = MIDI::Score::events_r_to_score_r( $t->events_r );
+            #MIDI::Score::dump_score($score_r);
+
+            # Collect the note events
+            for my $event (@$score_r) {
+                # ['note', <start>, <duration>, <channel>, <note>, <velocity>]
+                if ($event->[0] eq 'note') {
+                    push @{ $events{ $event->[3] }{ $event->[1] } },
+                        { note => $event->[4], dura => $event->[2] };
+                }
+            }
+        }
+    }
+
+    return \%events;
+}
 
 =head2 dura
 
@@ -397,181 +418,90 @@ Find all ngram phrases and return the note analysis.
 sub process {
     my ($self) = @_;
 
-    my $analysis;
+    for my $channel (sort { $a <=> $b } keys %{ $self->_note_list }) {
+        # Skip if this is not a channel to analyze
+        next if $self->analyze && keys @{ $self->analyze }
+            && !grep { $_ == $channel } @{ $self->analyze };
 
-    for my $file ( @{ $self->in_file } ) {
-        # Counter for the tracks seen
-        my $i = 0;
+        my $dura_text = '';
+        my $note_text = '';
 
-        my $opus = MIDI::Opus->new({ from_file => $file });
+        for my $start (sort { $a <=> $b } keys %{ $self->_note_list->{$channel} }) {
+            # CSV durations and notes
+            my $duras = join ',', map { $_->{dura} } @{ $self->_note_list->{$channel}{$start} };
+            my $notes = join ',', map { $_->{note} } @{ $self->_note_list->{$channel}{$start} };
 
-        $analysis .= "Ngram analysis of $file:\n\tN\tReps\tPhrase\n";
+            # Transliterate MIDI note numbers to alpha-code
+            ( my $str = $duras ) =~ tr/0-9,/a-k/;
+            $dura_text .= "$str ";
+            ( $str = $notes ) =~ tr/0-9,/a-k/;
+            $note_text .= "$str ";
+        }
 
-        # Handle each track...
-        for my $t ( $opus->tracks ) {
-            my $score_r = MIDI::Score::events_r_to_score_r( $t->events_r );
-            #MIDI::Score::dump_score($score_r);
+        # Parse the note text into ngrams
+        my $dura_ngram = Lingua::EN::Ngram->new( text => $dura_text );
+        my $dura_phrase = $dura_ngram->ngram( $self->ngram_size );
+        my $note_ngram = Lingua::EN::Ngram->new( text => $note_text );
+        my $note_phrase = $note_ngram->ngram( $self->ngram_size );
 
-            # Collect the note events for each note event
-            my @events = grep {
-                $_->[0] eq 'note'   # ['note', <start>, <duration>, <channel>, <note>, <velocity>]
-            } @$score_r;
+        # Counter for the ngrams seen
+        my $j = 0;
 
-            # XXX Assume that there is only one channel per track :\
-            my $track_channel = $self->one_channel ? 0 : $events[0][3];
+        # Display the ngrams in order of their repetition amount
+        for my $p ( sort { $dura_phrase->{$b} <=> $dura_phrase->{$a} || $a cmp $b } keys %$dura_phrase ) {
+            # Skip single occurance phrases if requested
+            next if !$self->single_phrases && $dura_phrase->{$p} == 1;
 
-            # Skip if there are no events and no channel
-            next unless @events && defined $track_channel;
+            $j++;
 
-            # Skip if this is not a channel to analyze
-            next if $self->analyze && keys @{ $self->analyze }
-                && !grep { $_ == $track_channel } @{ $self->analyze };
+            # End if a max is set and we are past the maximum
+            last if $self->max_phrases > 0 && $j > $self->max_phrases;
 
-            $i++;
-            $analysis .= "Track $i. Channel: $track_channel\n";
+            # Transliterate our letter code back to MIDI note numbers
+            ( my $num = $p ) =~ tr/a-k/0-9,/;
 
-            # Declare the notes to inspect
-            my $note_text = '';
-            my $dura_text = '';
+            # Convert MIDI numbers to named durations.
+            my $text = $self->dura_convert($num);
 
-            my @note_group;
-            my $note_last;
-            my @dura_group;
-            my $dura_last;
+            # Save the number of times the phrase is repeated
+            $self->dura->{$channel}{$text} += $dura_phrase->{$p};
+        }
 
-            # Accumulate the notes
-            for my $event ( @events ) {
-                # Transliterate MIDI note numbers to alpha-code
-                ( my $str = $event->[2] ) =~ tr/0-9/a-j/;
-                $dura_text .= "$str ";
-                ( $str = $event->[4] ) =~ tr/0-9/a-j/;
-                $note_text .= "$str ";
-
-                if (@dura_group == $self->ngram_size) {
-                    my $group = join ' ', @dura_group;
-                    $self->dura_net->{ $dura_last . '-' . $group }++ if $dura_last;
-                    $dura_last = $group;
-                    @dura_group = ();
+        unless (@{ $self->durations }) {
+            # Build the durations set
+            for my $channel (keys %{ $self->dura }) {
+                for my $duras (keys %{ $self->dura->{$channel} }) {
+                    # A dura string is a space separated, CSV
+                    my @duras = split / /, $duras;
+                    push @{ $self->_dura_list->{$channel} }, map { split /,/, $_ } @duras;
                 }
-                push @dura_group, $event->[2];
-
-                if (@note_group == $self->ngram_size) {
-                    my $group = join ' ', @note_group;
-                    $self->note_net->{ $note_last . '-' . $group }++ if $note_last;
-                    $note_last = $group;
-                    @note_group = ();
-                }
-                push @note_group, $event->[4];
+                $self->_dura_list->{$channel} = [ uniq @{ $self->_dura_list->{$channel} } ];
             }
+        }
 
-            # Parse the note text into ngrams
-            my $dura_ngram = Lingua::EN::Ngram->new( text => $dura_text );
-            my $dura_phrase = $dura_ngram->ngram( $self->ngram_size );
-            my $note_ngram = Lingua::EN::Ngram->new( text => $note_text );
-            my $note_phrase = $note_ngram->ngram( $self->ngram_size );
+        # Reset counter for the ngrams seen
+        $j = 0;
 
-            # Counter for the ngrams seen
-            my $j = 0;
+        # Display the ngrams in order of their repetition amount
+        for my $p ( sort { $note_phrase->{$b} <=> $note_phrase->{$a} || $a cmp $b } keys %$note_phrase ) {
+            # Skip single occurance phrases if requested
+            next if !$self->single_phrases && $note_phrase->{$p} == 1;
 
-            $analysis .= "\tDurations:\n";
+            $j++;
 
-            # Display the ngrams in order of their repetition amount
-            for my $p ( sort { $dura_phrase->{$b} <=> $dura_phrase->{$a} || $a cmp $b } keys %$dura_phrase ) {
-                # Skip single occurance phrases if requested
-                next if !$self->single_phrases && $dura_phrase->{$p} == 1;
+            # End if a max is set and we are past the maximum
+            last if $self->max_phrases > 0 && $j > $self->max_phrases;
 
-                # Don't allow phrases that are not the right size
-                my @items = grep { $_ } split /\s+/, $p;
-                next unless @items == $self->ngram_size;
+            # Transliterate our letter code back to MIDI note numbers
+            ( my $num = $p ) =~ tr/a-k/0-9,/;
 
-                $j++;
+            # Convert MIDI numbers to named notes.
+            my $text = $self->note_convert($num);
 
-                # End if a max is set and we are past the maximum
-                last if $self->max_phrases > 0 && $j > $self->max_phrases;
-
-                # Transliterate our letter code back to MIDI note numbers
-                ( my $num = $p ) =~ tr/a-j/0-9/;
-
-                # Convert MIDI numbers to named durations.
-                my $text = $self->dura_convert($num);
-
-                $analysis .= sprintf "\t%d\t%d\t%s (%s)\n",
-                    $j, $dura_phrase->{$p}, $num, $text;
-
-                # Save the number of times the phrase is repeated
-                $self->dura->{$track_channel}{$text} += $dura_phrase->{$p};
-            }
-
-            unless (@{ $self->durations }) {
-                # Build the known durations set
-                for my $channel (keys %{ $self->dura }) {
-                    for my $duras (keys %{ $self->dura->{$channel} }) {
-                        my @duras = split / /, $duras;
-                        push @{ $self->_dura_list->{$channel} }, @duras;
-                    }
-                    $self->_dura_list->{$channel} = [ uniq @{ $self->_dura_list->{$channel} } ];
-                }
-            }
-
-            # Reset counter for the ngrams seen
-            $j = 0;
-
-            $analysis .= "\tNotes:\n";
-
-            # Display the ngrams in order of their repetition amount
-            for my $p ( sort { $note_phrase->{$b} <=> $note_phrase->{$a} || $a cmp $b } keys %$note_phrase ) {
-                # Skip single occurance phrases if requested
-                next if !$self->single_phrases && $note_phrase->{$p} == 1;
-
-                # Don't allow phrases that are not the right size
-                my @items = grep { $_ } split /\s+/, $p;
-                next unless @items == $self->ngram_size;
-
-                $j++;
-
-                # End if a max is set and we are past the maximum
-                last if $self->max_phrases > 0 && $j > $self->max_phrases;
-
-                # Transliterate our letter code back to MIDI note numbers
-                ( my $num = $p ) =~ tr/a-j/0-9/;
-
-                # Convert MIDI numbers to named notes.
-                my $text = $self->note_convert($num);
-
-                $analysis .= sprintf "\t%d\t%d\t%s (%s)\n",
-                    $j, $note_phrase->{$p}, $num, $text;
-
-                # Save the number of times the phrase is repeated
-                $self->notes->{$track_channel}{$num} += $note_phrase->{$p};
-            }
-
-            $analysis .= $self->_gestalt_analysis( \@events )
-                if $self->bounds;
+            # Save the number of times the phrase is repeated
+            $self->notes->{$channel}{$text} += $note_phrase->{$p};
         }
     }
-
-    return $analysis;
-}
-
-sub _gestalt_analysis {
-    my ( $self, $events ) = @_;
-
-    my $score_r = MIDI::Score::events_r_to_score_r( $events );
-    $score_r = MIDI::Score::sort_score_r($score_r);
-
-    my $g = Music::Gestalt->new( score => $score_r );
-
-    my $note = Music::Note->new( $g->PitchLowest, 'midinum' );
-    my $low  = $note->format('midi');
-    $note    = Music::Note->new( $g->PitchHighest, 'midinum' );
-    my $high = $note->format('midi');
-    $note    = Music::Note->new( $g->PitchMiddle, 'midinum' );
-    my $mid  = $note->format('midi');
-
-    my $bounds = "\tRange: $low to $high\n"
-        . "\tSpan: $mid +/- " . $g->PitchRange . "\n";
-
-    return $bounds;
 }
 
 =head2 populate
@@ -607,17 +537,15 @@ sub populate {
                         [ values %{ $self->notes->{$channel} } ]
                     );
 
-                    # Convert MIDI numbers to named notes.
-                    my $note_text = $self->note_convert($choice);
-
-                    $playback .= "\t$n\t$channel\t$choice ($note_text)\n";
+                    $playback .= "\t$n\t$channel\t$choice\n";
 
                     # Add each chosen note to the score
                     for my $note ( split /\s+/, $choice ) {
+                        my @note = split /,/, $note;
                         my $duration = @{ $self->durations }
                             ? $self->durations->[ int rand @{ $self->durations } ]
                             : $self->_dura_list->{$channel}[ int rand @{ $self->_dura_list->{$channel} } ];
-                        $self->score->n( $duration, $note );
+                        $self->score->n( $duration, @note );
                     }
 
                     $self->score->r( $self->pause_duration )
@@ -649,10 +577,7 @@ sub populate {
             for my $phrase ( @track_notes ) {
                 $n++;
 
-                # Convert MIDI numbers to named notes.
-                my $note_text = $self->note_convert($phrase);
-
-                $playback .= "\t$n\t$channel\t$phrase ($note_text)\n";
+                $playback .= "\t$n\t$channel\t$phrase\n";
 
                 my @phrase = split /\s/, $phrase;
                 push @all, @phrase;
@@ -671,10 +596,11 @@ sub populate {
                         $self->score->r( $self->pause_duration );
                     }
                     else {
+                        my @note = split /,/, $note;
                         my $duration = @{ $self->durations }
                             ? $self->durations->[ int rand @{ $self->durations } ]
                             : $self->_dura_list->{$channel}[ int rand @{ $self->_dura_list->{$channel} } ];
-                        $self->score->n( $duration, $note );
+                        $self->score->n( $duration, @note );
                     }
                 }
             };
@@ -717,19 +643,24 @@ sub dura_convert {
     my $match = 0;
 
     for my $n ( split /\s+/, $string ) {
-        my $dura = $n / 96 / 10;
+        my @csv;
 
-        for my $key (keys %MIDI::Simple::Length) {
-            if (sprintf('%.4f', $MIDI::Simple::Length{$key}) eq sprintf('%.4f', $dura)) {
-                $match++;
-                $dura = $key;
-                last;
+        for my $v (split /,/, $n) {
+            my $dura = $v / $self->_opus_ticks;
+
+            for my $d (keys %MIDI::Simple::Length) {
+                if (sprintf('%.4f', $MIDI::Simple::Length{$d}) eq sprintf('%.4f', $dura)) {
+                    $match++;
+                    $dura = $d;
+                    last;
+                }
             }
+
+            push @csv, $match ? $dura : 'd' . $n;
+            $match = 0;
         }
 
-        push @text, $match ? $dura : 'd' . $n;
-
-        $match = 0;
+        push @text, join ',', @csv;
     }
 
     return join ' ', @text;
@@ -749,8 +680,14 @@ sub note_convert {
     my @text;
 
     for my $n ( split /\s+/, $string ) {
-        my $note = Music::Note->new( $n, 'midinum' );
-        push @text, $note->format('midi');
+        my @csv;
+
+        for my $v (split /,/, $n) {
+            my $note = Music::Note->new( $v, 'midinum' );
+            push @csv, $note->format('midi');
+        }
+        
+        push @text, join ',', @csv;
     }
 
     return join ' ', @text;
