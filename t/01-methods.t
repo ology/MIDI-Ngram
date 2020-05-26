@@ -126,10 +126,6 @@ is_deeply $obj->dura, $expected, 'processed durations';
 
 is_deeply [ sort @{ $obj->_dura_list->{0} } ], ['hn','qn'], '_dura_list';
 
-$obj->populate;
-
-isa_ok $obj->score, 'MIDI::Simple';
-
 $expected = {
     'hn,hn qn,hn-qn qn,hn' => 2,
     'qn hn,hn-qn,hn qn'    => 2,
@@ -169,6 +165,10 @@ $expected = {
 };
 
 is_deeply $obj->note_net->{0}, $expected, 'note_net';
+
+$obj->populate;
+
+isa_ok $obj->score, 'MIDI::Simple';
 
 is $obj->dura_convert('1920'), 'hn', 'dura_convert';
 is $obj->dura_convert('960,1920'), 'qn,hn', 'dura_convert';
