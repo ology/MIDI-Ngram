@@ -68,9 +68,9 @@ use Music::Note;
 
 =head1 DESCRIPTION
 
-C<MIDI::Ngram> parses a given list of MIDI files (ignoring the drums),
-finds the top repeated note phrases, builds the analysis, transition
-network, and renders to a MIDI file if desired.
+C<MIDI::Ngram> parses a given list of MIDI files, finds the top
+repeated note phrases, builds the analysis, transition network, and
+renders to a MIDI file if desired.
 
 Currently, this only works right for MIDI files with channels of
 B<single notes>.  Channels with simultaneous notes (as in, chords) are
@@ -415,7 +415,6 @@ sub process {
             # Collect the note events for each note event
             my @events = grep {
                 $_->[0] eq 'note'   # ['note', <start>, <duration>, <channel>, <note>, <velocity>]
-                && $_->[3] != 9     # Avoid the drum channel
             } @$score_r;
 
             # XXX Assume that there is only one channel per track :\
