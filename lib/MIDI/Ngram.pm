@@ -383,8 +383,35 @@ Constructed by the B<process> method.
 has dura_net => (
     is       => 'ro',
     init_arg => undef,
-    default  => sub { {} },
+    lazy     => 1,
+    builder  => 1,
 );
+
+sub _build_dura_net {
+    my ($self) = @_;
+
+    my %net;
+
+    for my $channel (sort { $a <=> $b } keys %{ $self->_event_list }) {
+        my @group;
+        my $last;
+
+        for my $start (sort { $a <=> $b } keys %{ $self->_event_list->{$channel} }) {
+            my $duras = join ',', map { $_->{dura} } @{ $self->_event_list->{$channel}{$start} };
+
+            if (@group == $self->ngram_size) {
+                my $group = join ' ', @group;
+                $net{$channel}{ $last . '-' . $group }++
+                    if $last;
+                $last = $group;
+                @group = ();
+            }
+            push @group, $self->dura_convert($duras);
+        }
+    }
+
+    return \%net;
+}
 
 =head2 note_net
 
@@ -396,8 +423,36 @@ by the B<process> method.
 has note_net => (
     is       => 'ro',
     init_arg => undef,
-    default  => sub { {} },
+    lazy     => 1,
+    builder  => 1,
 );
+
+sub _build_note_net {
+    my ($self) = @_;
+
+    my %net;
+
+    for my $channel (sort { $a <=> $b } keys %{ $self->_event_list }) {
+        my @group;
+        my $last;
+
+        for my $start (sort { $a <=> $b } keys %{ $self->_event_list->{$channel} }) {
+            my $notes = join ',', map { $_->{note} } @{ $self->_event_list->{$channel}{$start} };
+
+            if (@group == $self->ngram_size) {
+                my $group = join ' ', @group;
+                $net{$channel}{ $last . '-' . $group }++
+                    if $last;
+                $last = $group;
+                @group = ();
+            }
+
+            push @group, $self->note_convert($notes);
+        }
+    }
+
+    return \%net;
+}
 
 =head1 METHODS
 
