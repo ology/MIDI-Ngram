@@ -103,16 +103,18 @@ my $mng = MIDI::Ngram->new(
 );
 
 $mng->process;
-#warn ddc($mng->dura);
-#warn ddc($mng->notes);
-#warn ddc($mng->dura_net);
-#warn ddc($mng->note_net);
 
 if ( $opts{out} ) {
     my $playback = $mng->populate;
     print $playback;
 
     $mng->write;
+}
+else {
+    warn ddc($mng->dura);
+    warn ddc($mng->notes);
+    warn ddc($mng->dura_net);
+    warn ddc($mng->note_net);
 }
 
 exit unless $opts{image};
