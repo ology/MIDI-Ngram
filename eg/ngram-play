@@ -11,6 +11,8 @@
 use strict;
 use warnings;
 
+use Data::Dumper::Compact 'ddc';
+
 use File::Find::Rule;
 use Getopt::Long;
 use GraphViz2;
@@ -100,8 +102,11 @@ my $mng = MIDI::Ngram->new(
     patches         => $opts{patches},
 );
 
-my $analysis = $mng->process;
-print $analysis;
+$mng->process;
+#warn ddc($mng->dura);
+#warn ddc($mng->notes);
+#warn ddc($mng->dura_net);
+#warn ddc($mng->note_net);
 
 if ( $opts{out} ) {
     my $playback = $mng->populate;
