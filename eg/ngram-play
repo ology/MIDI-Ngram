@@ -43,7 +43,6 @@ my %opts = (
     shuf    => 0,        # Shuffle phrases
     single  => 0,        # Allow phrases seen only once
     one     => 0,        # Analyze phrases into one list
-    bounds  => 0,        # Show pitch bounds
     image   => 0,        # Output GraphViz network diagram
     thresh  => 10,       # Threshold to show net edges
     ranp    => 0,        # Random patch instead of all piano
@@ -66,7 +65,6 @@ GetOptions( \%opts,
     'shuf',
     'single',
     'one',
-    'bounds',
     'image',
     'thresh=i',
     'ranp',
@@ -98,7 +96,6 @@ my $mng = MIDI::Ngram->new(
     shuffle_phrases => $opts{shuf},
     single_phrases  => $opts{single},
     one_channel     => $opts{one},
-    bounds          => $opts{bounds},
     patches         => $opts{patches},
 );
 
