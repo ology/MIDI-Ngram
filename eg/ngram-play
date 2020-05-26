@@ -112,8 +112,8 @@ if ( $opts{out} ) {
 }
 else {
     warn ddc($mng->dura);
-    warn ddc($mng->notes);
     warn ddc($mng->dura_net);
+    warn ddc($mng->notes);
     warn ddc($mng->note_net);
 }
 
