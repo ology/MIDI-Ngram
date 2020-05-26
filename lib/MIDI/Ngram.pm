@@ -317,14 +317,14 @@ has notes => (
     default  => sub { {} },
 );
 
-has _note_list => (
+has _event_list => (
     is       => 'ro',
     init_arg => undef,
     lazy     => 1,
     builder  => 1,
 );
 
-sub _build__note_list {
+sub _build__event_list {
     my ($self) = @_;
 
     my %events;
@@ -418,7 +418,7 @@ Find all ngram phrases and return the note analysis.
 sub process {
     my ($self) = @_;
 
-    for my $channel (sort { $a <=> $b } keys %{ $self->_note_list }) {
+    for my $channel (sort { $a <=> $b } keys %{ $self->_event_list }) {
         # Skip if this is not a channel to analyze
         next if $self->analyze && keys @{ $self->analyze }
             && !grep { $_ == $channel } @{ $self->analyze };
@@ -426,10 +426,10 @@ sub process {
         my $dura_text = '';
         my $note_text = '';
 
-        for my $start (sort { $a <=> $b } keys %{ $self->_note_list->{$channel} }) {
+        for my $start (sort { $a <=> $b } keys %{ $self->_event_list->{$channel} }) {
             # CSV durations and notes
-            my $duras = join ',', map { $_->{dura} } @{ $self->_note_list->{$channel}{$start} };
-            my $notes = join ',', map { $_->{note} } @{ $self->_note_list->{$channel}{$start} };
+            my $duras = join ',', map { $_->{dura} } @{ $self->_event_list->{$channel}{$start} };
+            my $notes = join ',', map { $_->{note} } @{ $self->_event_list->{$channel}{$start} };
 
             # Transliterate MIDI note numbers to alpha-code
             ( my $str = $duras ) =~ tr/0-9,/a-k/;
