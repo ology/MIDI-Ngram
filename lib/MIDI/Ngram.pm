@@ -737,7 +737,7 @@ sub note_convert {
             my $note = Music::Note->new( $v, 'midinum' );
             push @csv, $note->format('midi');
         }
-        
+
         push @text, join ',', @csv;
     }
 
