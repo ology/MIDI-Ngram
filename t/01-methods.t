@@ -71,7 +71,6 @@ throws_ok {
 
 my $obj = new_ok 'MIDI::Ngram' => [
     in_file => [$filename],
-    weight  => 1,
 ];
 
 is_deeply $obj->in_file, [$filename], 'in_file';
@@ -84,7 +83,7 @@ is $obj->out_file, 'midi-ngram.mid', 'out_file';
 ok !$obj->pause_duration, 'pause_duration';
 ok !$obj->analyze, 'analyze';
 is $obj->loop, 10, 'loop';
-ok $obj->weight, 'weight';
+ok !$obj->weight, 'weight';
 ok !$obj->random_patch, 'random_patch';
 ok !$obj->shuffle_phrases, 'shuffle_phrases';
 ok !$obj->single_phrases, 'single_phrases';
