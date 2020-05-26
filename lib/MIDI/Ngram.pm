@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of MIDI files
 
-our $VERSION = '0.1401';
+our $VERSION = '0.1500';
 
 use Moo;
 use strictures 2;
@@ -51,10 +51,6 @@ use Music::Note;
 C<MIDI::Ngram> parses a given list of MIDI files, finds the top
 repeated note phrases, builds the analysis, transition network, and
 renders to a MIDI file if desired.
-
-Currently, this only works right for MIDI files with channels of
-B<single notes>.  Channels with simultaneous notes (as in, chords) are
-not handled correctly. Ugh!
 
 =head1 ATTRIBUTES
 
@@ -788,10 +784,6 @@ L<List::Util::WeightedChoice>
 
 L<Music::Note>
 
-L<MIDI::Simple>
-
 L<MIDI::Util>
-
-L<Music::Gestalt>
 
 =cut
