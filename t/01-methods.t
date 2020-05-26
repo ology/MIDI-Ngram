@@ -69,10 +69,6 @@ throws_ok {
     MIDI::Ngram->new( in_file => [$filename], one_channel => 'foo' )
 } qr/Invalid Boolean/, 'invalid one_channel';
 
-throws_ok {
-    MIDI::Ngram->new( in_file => [$filename], bounds => 'foo' )
-} qr/Invalid Boolean/, 'invalid bounds';
-
 my $obj = new_ok 'MIDI::Ngram' => [
     in_file => [$filename],
     weight  => 1,
@@ -93,7 +89,6 @@ ok !$obj->random_patch, 'random_patch';
 ok !$obj->shuffle_phrases, 'shuffle_phrases';
 ok !$obj->single_phrases, 'single_phrases';
 ok !$obj->one_channel, 'one_channel';
-ok !$obj->bounds, 'bounds';
 is $obj->score, undef, 'score';
 is_deeply $obj->dura, {}, 'notes';
 is_deeply $obj->notes, {}, 'notes';
