@@ -403,9 +403,6 @@ sub process {
         # Counter for the tracks seen
         my $i = 0;
 
-        # Declare a tempo in microseconds
-        my $tempo = 500_000; # 120 quarter notes per minute default
-
         my $opus = MIDI::Opus->new({ from_file => $file });
 
         $analysis .= "Ngram analysis of $file:\n\tN\tReps\tPhrase\n";
@@ -414,13 +411,6 @@ sub process {
         for my $t ( $opus->tracks ) {
             my $score_r = MIDI::Score::events_r_to_score_r( $t->events_r );
             #MIDI::Score::dump_score($score_r);
-
-            # Get the tune tempo if set
-            for my $event (@$score_r) {
-                if ($event->[0] eq 'set_tempo' && $event->[2]) {
-                    $tempo = $event->[2];
-                }
-            }
 
             # Collect the note events for each note event
             my @events = grep {
