@@ -2,6 +2,7 @@ Revision history for MIDI-Ngram
 
 {{$NEXT}}
     - Drop unused bounds attribute.
+    - Clean-up test code.
 
 0.1500 2020-05-26 11:53:51
     - Process simultaneous events!
