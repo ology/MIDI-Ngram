@@ -25,7 +25,6 @@ use Music::Note;
     ngram_size   => 3,
     patches      => [qw( 68 69 70 71 72 73 )],
     random_patch => 1,
-    bounds       => 1,
   );
 
   $mng->process;
@@ -264,20 +263,6 @@ Default: C<0>
 =cut
 
 has one_channel => (
-    is      => 'ro',
-    isa     => \&_is_boolean,
-    default => sub { 0 },
-);
-
-=head2 bounds
-
-Boolean.  Include pitch range in the analysis.
-
-Default: C<0>
-
-=cut
-
-has bounds => (
     is      => 'ro',
     isa     => \&_is_boolean,
     default => sub { 0 },
