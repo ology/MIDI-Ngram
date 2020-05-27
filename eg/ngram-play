@@ -45,6 +45,7 @@ my %opts = (
     one     => 0,        # Analyze phrases into one list
     image   => 0,        # Output GraphViz network diagram
     thresh  => 10,       # Threshold to show net edges
+    chan    => 0,        # Network diagram channel to render
     ranp    => 0,        # Random patch instead of all piano
     patches => join(' ', @patches),
 );
@@ -67,6 +68,7 @@ GetOptions( \%opts,
     'one',
     'image',
     'thresh=i',
+    'chan=i',
     'ranp',
     'patches=s',
 ) or die 'Failed GetOptions';
@@ -125,13 +127,13 @@ my $g = GraphViz2->new(
 
 my %edges;
 
-for my $edge ( keys %{ $mng->note_net->{0} } ) {
-    next unless $mng->note_net->{0}{$edge} >= $opts{thresh};
+for my $edge ( keys %{ $mng->note_net->{$opts{chan}} } ) {
+    next unless $mng->note_net->{$opts{chan}}{$edge} >= $opts{thresh};
 
     # Split the edge in two
     my ($i, $j) = split '-', $edge;
 
-    $g->add_edge(from => $i, to => $j, label => $mng->note_net->{0}{$edge})
+    $g->add_edge(from => $i, to => $j, label => $mng->note_net->{$opts{chan}}{$edge})
         unless $edges{$edge}++;
 }
 
@@ -146,13 +148,13 @@ $g = GraphViz2->new(
 
 %edges = ();
 
-for my $edge ( keys %{ $mng->dura_net->{0} } ) {
-    next unless $mng->dura_net->{0}{$edge} >= $opts{thresh};
+for my $edge ( keys %{ $mng->dura_net->{$opts{chan}} } ) {
+    next unless $mng->dura_net->{$opts{chan}}{$edge} >= $opts{thresh};
 
     # Split the edge in two
     my ($i, $j) = split '-', $edge;
 
-    $g->add_edge(from => $i, to => $j, label => $mng->dura_net->{0}{$edge})
+    $g->add_edge(from => $i, to => $j, label => $mng->dura_net->{$opts{chan}}{$edge})
         unless $edges{$edge}++;
 }
 
