@@ -698,7 +698,7 @@ sub dura_convert {
                 }
             }
 
-            push @csv, $match ? $dura : 'd' . $n;
+            push @csv, $match ? $dura : 'd' . $v;
             $match = 0;
         }
 
