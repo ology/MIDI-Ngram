@@ -1,6 +1,7 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Fix crucial variable in the ->dura_convert method.
 
 0.1600 2020-05-27 12:02:38
     - Improve eg/ngram-play.
