@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of MIDI files
 
-our $VERSION = '0.1601';
+our $VERSION = '0.1700';
 
 use Moo;
 use strictures 2;
@@ -242,18 +242,18 @@ has shuffle_phrases => (
     default => sub { 0 },
 );
 
-=head2 single_phrases
+=head2 min_phrases
 
-Boolean.  Allow single occurrence ngrams.
+Integer.  Allow a minimum of this number of ngram occurances.
 
-Default: C<0>
+Default: C<2>
 
 =cut
 
-has single_phrases => (
+has min_phrases => (
     is      => 'ro',
-    isa     => \&_is_boolean,
-    default => sub { 0 },
+    isa     => \&_is_integer,
+    default => sub { 2 },
 );
 
 =head2 one_channel
@@ -488,7 +488,7 @@ sub process {
         # Display the ngrams in order of their repetition amount
         for my $p ( sort { $dura_phrase->{$b} <=> $dura_phrase->{$a} || $a cmp $b } keys %$dura_phrase ) {
             # Skip single occurance phrases if requested
-            next if !$self->single_phrases && $dura_phrase->{$p} == 1;
+            next if $dura_phrase->{$p} < $self->min_phrases;
 
             $j++;
 
@@ -523,7 +523,7 @@ sub process {
         # Display the ngrams in order of their repetition amount
         for my $p ( sort { $note_phrase->{$b} <=> $note_phrase->{$a} || $a cmp $b } keys %$note_phrase ) {
             # Skip single occurance phrases if requested
-            next if !$self->single_phrases && $note_phrase->{$p} == 1;
+            next if $note_phrase->{$p} < $self->min_phrases;
 
             $j++;
 

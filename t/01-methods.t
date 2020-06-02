@@ -62,8 +62,8 @@ throws_ok {
 } qr/Invalid Boolean/, 'invalid shuffle_phrases';
 
 throws_ok {
-    MIDI::Ngram->new( in_file => [$filename], single_phrases => 'foo' )
-} qr/Invalid Boolean/, 'invalid single_phrases';
+    MIDI::Ngram->new( in_file => [$filename], min_phrases => 0 )
+} qr/Invalid integer/, 'invalid min_phrases';
 
 throws_ok {
     MIDI::Ngram->new( in_file => [$filename], one_channel => 'foo' )
@@ -86,7 +86,7 @@ is $obj->loop, 10, 'loop';
 ok !$obj->weight, 'weight';
 ok !$obj->random_patch, 'random_patch';
 ok !$obj->shuffle_phrases, 'shuffle_phrases';
-ok !$obj->single_phrases, 'single_phrases';
+is $obj->min_phrases, 2, 'min_phrases';
 ok !$obj->one_channel, 'one_channel';
 is $obj->score, undef, 'score';
 is_deeply $obj->dura, {}, 'notes';
