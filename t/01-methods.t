@@ -75,7 +75,7 @@ my $obj = new_ok 'MIDI::Ngram' => [
 
 is_deeply $obj->in_file, [$filename], 'in_file';
 is $obj->ngram_size, 2, 'ngram_size';
-is $obj->max_phrases, 10, 'max_phrases';
+is $obj->max_phrases, 0, 'max_phrases';
 is $obj->bpm, 100, 'bpm';
 is_deeply $obj->durations, [], 'durations';
 is_deeply $obj->patches, [0 .. 127], 'patches';
@@ -96,16 +96,24 @@ $obj->process;
 
 my $expected = {
     0 => {
-        'C4 G4,E3'    => 2,
-        'C4,C3 C4'    => 2,
+        'A4 G4,E3' => 2,
+        'A4,F3 A4' => 2,
+        'C4 G4,E3' => 2,
+        'C4,C3 C4' => 2,
         'D4,F3 D4,G3' => 2,
         'D4,G3 C4,C3' => 2,
-        'E4 D4,F3'    => 2,
-        'E4 D4,G3'    => 2,
-        'E4,C3 E4'    => 2,
-        'E4,G3 E4'    => 2,
-        'F4 E4,C3'    => 2,
-        'G4,E3 G4'    => 4,
+        'E4 D4,F3' => 2,
+        'E4 D4,G3' => 2,
+        'E4,C3 E4' => 2,
+        'E4,G3 E4' => 2,
+        'F4 E4,C3' => 2,
+        'F4 E4,G3' => 2,
+        'F4,D3 F4' => 2,
+        'F4,F3 F4' => 2,
+        'G4 A4,F3' => 2,
+        'G4 F4,F3' => 2,
+        'G4,E3 F4,D3' => 2,
+        'G4,E3 G4' => 4,
     }
 };
 
