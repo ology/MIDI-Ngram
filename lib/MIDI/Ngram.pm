@@ -245,7 +245,8 @@ has shuffle_phrases => (
 
 =head2 min_phrases
 
-Integer.  Allow a minimum of this number of ngram occurances.
+Integer.  Allow a minimum of this number of ngram occurances in both
+the repetition and network lists.
 
 Default: C<2>
 
