@@ -131,38 +131,13 @@ $expected = {
     'qn hn,hn-qn,hn qn'    => 2,
     'qn qn,hn-qn hn,hn'    => 2,
     'qn qn,hn-qn qn,hn'    => 3,
-    'qn qn,hn-qn qn,qn'    => 1,
-    'qn qn,qn-qn,qn hn,qn' => 1,
     'qn,hn qn-hn,hn qn,hn' => 2,
     'qn,hn qn-qn,hn qn'    => 5,
-    'qn,hn qn-qn,qn qn,qn' => 1,
-    'qn,qn hn,qn-qn qn,hn' => 1,
 };
 
 is_deeply $obj->dura_net->{0}, $expected, 'dura_net';
 
-$expected = {
-    'A4 G4,E3-F4,D3 F4'    => 1,
-    'A4,F3 A4-G4,E3 F4,D3' => 1,
-    'C3 G4,E3-G4 F4,F3'    => 1,
-    'C4 G4,E3-G4 A4,F3'    => 1,
-    'C4,C3 C4-G4,E3 G4'    => 1,
-    'D4,G3 C4,C3-C4 G4,E3' => 1,
-    'D4,G3 C4,E3-C3 G4,E3' => 1,
-    'E4 D4,F3-D4,G3 C4,E3' => 1,
-    'E4 D4,G3-G4,E3 G4'    => 1,
-    'E4,C3 E4-D4,F3 D4,G3' => 1,
-    'E4,G3 E4-D4,G3 C4,C3' => 1,
-    'F4 E4,C3-E4 D4,F3'    => 1,
-    'F4 E4,G3-E4 D4,G3'    => 1,
-    'F4,D3 F4-E4,C3 E4'    => 1,
-    'F4,F3 F4-E4,G3 E4'    => 1,
-    'G4 A4,F3-A4 G4,E3'    => 1,
-    'G4 F4,F3-F4 E4,G3'    => 1,
-    'G4,E3 F4,D3-F4 E4,C3' => 1,
-    'G4,E3 G4-A4,F3 A4'    => 1,
-    'G4,E3 G4-F4,F3 F4'    => 1,
-};
+$expected = {};
 
 is_deeply $obj->note_net->{0}, $expected, 'note_net';
 

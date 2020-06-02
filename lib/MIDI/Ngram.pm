@@ -393,6 +393,13 @@ sub _build_dura_net {
         }
     }
 
+    for my $channel (keys %net) {
+        for my $node (keys %{ $net{$channel} }) {
+            delete $net{$channel}{$node}
+                if $net{$channel}{$node} < $self->min_phrases;
+        }
+    }
+
     return \%net;
 }
 
@@ -431,6 +438,13 @@ sub _build_note_net {
             }
 
             push @group, $self->note_convert($notes);
+        }
+    }
+
+    for my $channel (keys %net) {
+        for my $node (keys %{ $net{$channel} }) {
+            delete $net{$channel}{$node}
+                if $net{$channel}{$node} < $self->min_phrases;
         }
     }
 
