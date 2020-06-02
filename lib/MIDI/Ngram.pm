@@ -100,7 +100,7 @@ has min_phrases => (
 
 The maximum number of phrases to analyze/play.
 
-Default: C<10>
+Default: C<0>
 
 Setting this to a value of C<0> analyzes all phrases.
 
@@ -109,7 +109,7 @@ Setting this to a value of C<0> analyzes all phrases.
 has max_phrases => (
     is      => 'ro',
     isa     => \&_is_integer0,
-    default => sub { 10 },
+    default => sub { 0 },
 );
 
 =head2 bpm
