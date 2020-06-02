@@ -81,6 +81,21 @@ has ngram_size => (
     default => sub { 2 },
 );
 
+=head2 min_phrases
+
+Integer.  Allow a minimum of this number of ngram occurances in both
+the repetition and network lists.
+
+Default: C<2>
+
+=cut
+
+has min_phrases => (
+    is      => 'ro',
+    isa     => \&_is_integer,
+    default => sub { 2 },
+);
+
 =head2 max_phrases
 
 The maximum number of phrases to analyze/play.
@@ -241,21 +256,6 @@ has shuffle_phrases => (
     is      => 'ro',
     isa     => \&_is_boolean,
     default => sub { 0 },
-);
-
-=head2 min_phrases
-
-Integer.  Allow a minimum of this number of ngram occurances in both
-the repetition and network lists.
-
-Default: C<2>
-
-=cut
-
-has min_phrases => (
-    is      => 'ro',
-    isa     => \&_is_integer,
-    default => sub { 2 },
 );
 
 =head2 one_channel
