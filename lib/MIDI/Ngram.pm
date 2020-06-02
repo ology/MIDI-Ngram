@@ -83,7 +83,7 @@ has ngram_size => (
 
 =head2 min_phrases
 
-Integer.  Allow a minimum of this number of ngram occurances in both
+Integer.  Allow a minimum of this number of ngram occurrences in both
 the repetition and network lists.
 
 Default: C<2>
