@@ -23,6 +23,7 @@ use Music::Note;
   my $mng = MIDI::Ngram->new(
     in_file      => [ 'eg/twinkle_twinkle.mid' ],
     ngram_size   => 3,
+    min_phrases  => 3,
     max_phrases  => 0, # Analyze all events
     patches      => [qw( 68 69 70 71 72 73 )],
     random_patch => 1,
