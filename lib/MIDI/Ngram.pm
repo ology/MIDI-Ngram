@@ -838,6 +838,14 @@ sub note_convert {
     return join ' ', @text;
 }
 
+=head2 dura_note_convert
+
+  $dura_notes = $mng->dura_note_convert($string);
+
+Convert MIDI numbers to named C<duration*note> strings.
+
+=cut
+
 sub dura_note_convert {
     my ($self, $string) = @_;
 
