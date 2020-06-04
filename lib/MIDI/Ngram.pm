@@ -523,7 +523,7 @@ Create a new C<MIDI::Ngram> object.
 
   $mng->process;
 
-Find all ngram phrases of drutations, notes and both combined.
+Find all ngram phrases of durations, notes and both combined.
 
 This method creates the B<dura_notes>, B<dura>, and B<notes>
 repetition lists.
