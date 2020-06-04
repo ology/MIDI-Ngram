@@ -525,6 +525,9 @@ Create a new C<MIDI::Ngram> object.
 
 Find all ngram phrases of drutations, notes and both combined.
 
+This method creates the B<dura_notes>, B<dura>, and B<notes>
+repetition lists.
+
 =cut
 
 sub process {
