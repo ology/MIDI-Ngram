@@ -521,9 +521,9 @@ Create a new C<MIDI::Ngram> object.
 
 =head2 process
 
-  $analysis = $mng->process;
+  $mng->process;
 
-Find all ngram phrases and return the note analysis.
+Find all ngram phrases of drutations, notes and both combined.
 
 =cut
 
