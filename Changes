@@ -1,6 +1,10 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+    - Improve documentation.
+    - Add computation of simultaneous duration*note event lists.
+
+0.1700 2020-06-02 14:41:49
     - Replace the single_phrases Boolean attribute with a more generic min_phrases integer.
     - Make the note and duration net creation respect the min_phrases.
     - Make the max_phrases default to zero (analyze all events).

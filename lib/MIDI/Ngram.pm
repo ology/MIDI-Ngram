@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of MIDI files
 
-our $VERSION = '0.1700';
+our $VERSION = '0.1800';
 
 use Moo;
 use strictures 2;
@@ -289,6 +289,19 @@ has _opus_ticks => (
     is => 'rw',
 );
 
+=head2 dura_notes
+
+The hash-reference bucket of C<duration*note> ngrams.  Constructed by
+the B<process> method.
+
+=cut
+
+has dura_notes => (
+    is       => 'ro',
+    init_arg => undef,
+    default  => sub { {} },
+);
+
 =head2 notes
 
 The hash-reference bucket of pitch ngrams.  Constructed by the
@@ -361,7 +374,6 @@ has _dura_list => (
 =head2 dura_net
 
 A hash-reference ngram transition network of the durations.
-Constructed by the B<process> method.
 
 =cut
 
@@ -407,8 +419,7 @@ sub _build_dura_net {
 
 =head2 note_net
 
-A hash-reference ngram transition network of the notes.  Constructed
-by the B<process> method.
+A hash-reference ngram transition network of the notes.
 
 =cut
 
@@ -453,6 +464,53 @@ sub _build_note_net {
     return \%net;
 }
 
+=head2 dura_note_net
+
+A hash-reference ngram transition network of the durations and notes
+considered as a unit.
+
+=cut
+
+has dura_note_net => (
+    is       => 'ro',
+    init_arg => undef,
+    lazy     => 1,
+    builder  => 1,
+);
+
+sub _build_dura_note_net {
+    my ($self) = @_;
+
+    my %net;
+
+    for my $channel (sort { $a <=> $b } keys %{ $self->_event_list }) {
+        my @group;
+        my $last;
+
+        for my $start (sort { $a <=> $b } keys %{ $self->_event_list->{$channel} }) {
+            my $nodes = join ',', map { "|$_->{dura}*$_->{note}|" } @{ $self->_event_list->{$channel}{$start} };
+
+            if (@group == $self->ngram_size) {
+                my $group = join ' ', @group;
+                $net{$channel}{ $last . '-' . $group }++
+                    if $last;
+                $last = $group;
+                @group = ();
+            }
+            push @group, $self->dura_note_convert($nodes);
+        }
+    }
+
+    for my $channel (keys %net) {
+        for my $node (keys %{ $net{$channel} }) {
+            delete $net{$channel}{$node}
+                if $net{$channel}{$node} < $self->min_phrases;
+        }
+    }
+
+    return \%net;
+}
+
 =head1 METHODS
 
 =head2 new
@@ -477,11 +535,13 @@ sub process {
         next if $self->analyze && keys @{ $self->analyze }
             && !grep { $_ == $channel } @{ $self->analyze };
 
+        my $dura_note_text = '';
         my $dura_text = '';
         my $note_text = '';
 
         for my $start (sort { $a <=> $b } keys %{ $self->_event_list->{$channel} }) {
             # CSV durations and notes
+            my $dura_notes = join ',', map { "|$_->{dura}*$_->{note}|" } @{ $self->_event_list->{$channel}{$start} };
             my $duras = join ',', map { $_->{dura} } @{ $self->_event_list->{$channel}{$start} };
             my $notes = join ',', map { $_->{note} } @{ $self->_event_list->{$channel}{$start} };
 
@@ -490,9 +550,13 @@ sub process {
             $dura_text .= "$str ";
             ( $str = $notes ) =~ tr/0-9,/a-k/;
             $note_text .= "$str ";
+            ( $str = $dura_notes ) =~ tr/0-9,*|/a-m/;
+            $dura_note_text .= "$str ";
         }
 
         # Parse the note text into ngrams
+        my $dura_note_ngram = Lingua::EN::Ngram->new( text => $dura_note_text );
+        my $dura_note_phrase = $dura_note_ngram->ngram( $self->ngram_size );
         my $dura_ngram = Lingua::EN::Ngram->new( text => $dura_text );
         my $dura_phrase = $dura_ngram->ngram( $self->ngram_size );
         my $note_ngram = Lingua::EN::Ngram->new( text => $note_text );
@@ -554,6 +618,29 @@ sub process {
 
             # Save the number of times the phrase is repeated
             $self->notes->{$channel}{$text} += $note_phrase->{$p};
+        }
+
+        # Reset counter for the ngrams seen
+        $j = 0;
+
+        # Display the ngrams in order of their repetition amount
+        for my $p ( sort { $dura_note_phrase->{$b} <=> $dura_note_phrase->{$a} || $a cmp $b } keys %$dura_note_phrase ) {
+            # Skip single occurance phrases if requested
+            next if $dura_note_phrase->{$p} < $self->min_phrases;
+
+            $j++;
+
+            # End if a max is set and we are past the maximum
+            last if $self->max_phrases > 0 && $j > $self->max_phrases;
+
+            # Transliterate our letter code back to MIDI note numbers
+            ( my $num = $p ) =~ tr/a-m/0-9,*|/;
+
+            # Convert MIDI numbers to named notes.
+            my $text = $self->dura_note_convert($num);
+
+            # Save the number of times the phrase is repeated
+            $self->dura_notes->{$channel}{$text} += $dura_note_phrase->{$p};
         }
     }
 }
@@ -749,6 +836,26 @@ sub note_convert {
     }
 
     return join ' ', @text;
+}
+
+sub dura_note_convert {
+    my ($self, $string) = @_;
+
+    my @text;
+
+    for my $frag ( split /\|/, $string ) {
+        my $processed = $frag;
+
+        if ($frag =~ /^([\w,]+)\*([\w,]+)$/) {
+            $processed = $self->dura_convert($1)
+                . '*'
+                . $self->note_convert($2);
+        }
+
+        push @text, $processed;
+    }
+
+    return join '', @text;
 }
 
 sub _random_patch {
