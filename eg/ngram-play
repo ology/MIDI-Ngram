@@ -4,10 +4,10 @@
 # MIDI files or a directory, and make a transition note network diagram.
 #
 # Examples:
-# perl ngram-play --files eg/twinkle-twinkle.mid --size 2 --out '' --image --thresh 2
-# perl ngram-play --files ~/Music/MIDI/moonlight.mid --size 3 --max 16 --pause en
+# perl ngram-play --files eg/twinkle-twinkle.mid --size 2 --out '' --image
+# perl ngram-play --files ~/Music/MIDI/moonlight.mid --size 3 --min 3 --pause en
 # perl ngram-play --files eg/twinkle-twinkle.mid,~/Music/MIDI/moonlight.mid
-# perl ngram-play --dir ~/Music/MIDI/Bach --size 4 --max 64 --shuf
+# perl ngram-play --dir ~/Music/MIDI/Bach --size 4 --min 8 --max 64 --shuf
 
 use strict;
 use warnings;
@@ -44,7 +44,6 @@ my %opts = (
     shuf    => 0,        # Shuffle phrases
     one     => 0,        # Analyze phrases into one list
     image   => 0,        # Output GraphViz network diagram
-    thresh  => 10,       # Threshold to show net edges
     chan    => 0,        # Network diagram channel to render
     ranp    => 0,        # Random patch instead of all piano
     patches => join(' ', @patches),
@@ -67,7 +66,6 @@ GetOptions( \%opts,
     'shuf',
     'one',
     'image',
-    'thresh=i',
     'chan=i',
     'ranp',
     'patches=s',
@@ -131,8 +129,6 @@ my $g = GraphViz2->new(
 my %edges;
 
 for my $edge ( keys %{ $mng->note_net->{$opts{chan}} } ) {
-    next unless $mng->note_net->{$opts{chan}}{$edge} >= $opts{thresh};
-
     # Split the edge in two
     my ($i, $j) = split '-', $edge;
 
@@ -152,8 +148,6 @@ $g = GraphViz2->new(
 %edges = ();
 
 for my $edge ( keys %{ $mng->dura_net->{$opts{chan}} } ) {
-    next unless $mng->dura_net->{$opts{chan}}{$edge} >= $opts{thresh};
-
     # Split the edge in two
     my ($i, $j) = split '-', $edge;
 
@@ -173,8 +167,6 @@ $g = GraphViz2->new(
 %edges = ();
 
 for my $edge ( keys %{ $mng->dura_note_net->{$opts{chan}} } ) {
-    next unless $mng->dura_note_net->{$opts{chan}}{$edge} >= $opts{thresh};
-
     # Split the edge in two
     my ($i, $j) = split '-', $edge;
 
