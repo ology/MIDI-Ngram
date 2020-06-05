@@ -44,8 +44,8 @@ use Music::Note;
   $mng->write;
 
   # Convert a MIDI number string to a duration or note name.
-  my $named = $mng->dura_convert('96');
-  $named = $mng->note_convert('60 61,62');
+  my $named = $mng->dura_convert('96'); # qn
+  $named = $mng->note_convert('60 61,62'); # C4 Cs4,D4
 
 =head1 DESCRIPTION
 
@@ -294,6 +294,9 @@ has _opus_ticks => (
 The hash-reference bucket of C<duration*note> ngrams.  Constructed by
 the B<process> method.
 
+The combination on duration with a note is indicated with the C<*>
+character.  For example: C<ten*Cs4>
+
 =cut
 
 has dura_notes => (
@@ -306,6 +309,10 @@ has dura_notes => (
 
 The hash-reference bucket of pitch ngrams.  Constructed by the
 B<process> method.
+
+Notes are represented in MIDI format with octave number like, C<Cs4>.
+A cluster of repeated notes is separated by spaces.  Simultaneous
+notes are separated with a comma (C<,>).  For example: C<A4,Cs5>.
 
 =cut
 
@@ -357,6 +364,11 @@ sub _build__event_list {
 The hash-reference bucket of duration ngrams.  Constructed by the
 B<process> method.
 
+Durations are represented in MIDI::Simple style format.  For example,
+C<hn> for a known length and C<d123> for a tick duration.
+A cluster of repeated durations is separated by spaces.  Simultaneous
+durations are separated with a comma (C<,>).  For example: C<hn,d85>.
+
 =cut
 
 has dura => (
@@ -374,6 +386,10 @@ has _dura_list => (
 =head2 dura_net
 
 A hash-reference ngram transition network of the durations.
+
+A dash or hyphen (C<->) divides nodes.  For example:
+C<qn,hn qn-qn,hn qn> where the nodes are both C<qn,hn qn> and
+C<qn,hn qn>.
 
 =cut
 
@@ -420,6 +436,10 @@ sub _build_dura_net {
 =head2 note_net
 
 A hash-reference ngram transition network of the notes.
+
+A dash or hyphen (C<->) divides nodes.  For example:
+C<A4 G4,E3-F4,D3 F4> where the nodes are C<A4 G4,E3> and
+C<F4,D3 F4>.
 
 =cut
 
@@ -468,6 +488,10 @@ sub _build_note_net {
 
 A hash-reference ngram transition network of the durations and notes
 considered as a unit.
+
+A dash or hyphen (C<->) divides nodes.  For example:
+C<qn*C3 qn*G4,hn*E3-qn*G4 qn*F4,hn*F3> where the nodes are
+C<qn*C3 qn*G4,hn*E3> and C<qn*G4 qn*F4,hn*F3>.
 
 =cut
 
