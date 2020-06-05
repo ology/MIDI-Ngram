@@ -32,9 +32,11 @@ use Music::Note;
   $mng->process;
 
   # Analyze
+  print Dumper $mng->dura_notes;
   print Dumper $mng->duras;
   print Dumper $mng->notes;
 
+  print Dumper $mng->dura_note_net;
   print Dumper $mng->dura_net;
   print Dumper $mng->note_net;
 
