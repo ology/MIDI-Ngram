@@ -6,7 +6,7 @@
 # Examples:
 # perl ngram-play --files eg/twinkle-twinkle.mid --size 2 --out '' --image --thresh 2
 # perl ngram-play --files ~/Music/MIDI/moonlight.mid --size 3 --max 16 --pause en
-# perl ngram-play --files eg/twinkle-twinkle.mid,~/Music/MIDI/moonlight.mid --size 3
+# perl ngram-play --files eg/twinkle-twinkle.mid,~/Music/MIDI/moonlight.mid
 # perl ngram-play --dir ~/Music/MIDI/Bach --size 4 --max 64 --shuf
 
 use strict;
