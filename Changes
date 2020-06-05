@@ -2,6 +2,7 @@ Revision history for MIDI-Ngram
 
 {{$NEXT}}
     - Simplify eg/ngram-play a bit.
+    - Improve documentation.
 
 0.1802 2020-06-05 11:02:34
     - Improve eg/ngram-play example comment. Woo!
