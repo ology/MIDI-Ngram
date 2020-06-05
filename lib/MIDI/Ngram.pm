@@ -53,7 +53,7 @@ C<MIDI::Ngram> parses a given list of MIDI files, finds the top
 repeated note phrases, builds the transition networks, and renders to
 a MIDI file if desired.
 
-Note: This module currently assumes that all given B<in_files> have
+Note: This module currently assumes that all given B<in_file>s have
 the same MIDI ppqn (given by the first C<$opus-E<gt>ticks> seen).
 
 =head1 ATTRIBUTES
