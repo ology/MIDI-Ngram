@@ -297,7 +297,7 @@ has _opus_ticks => (
 The hash-reference bucket of C<duration*note> ngrams.  Constructed by
 the B<process> method.
 
-The combination on duration with a note is indicated with the C<*>
+The combination of duration with a note is indicated with the C<*>
 character.  For example: C<ten*Cs4>
 
 =cut
