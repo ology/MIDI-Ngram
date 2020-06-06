@@ -1,14 +1,4 @@
 #!/usr/bin/env perl
-
-# Make a new MIDI file of the top repeated note phrases of a list of
-# MIDI files or a directory, and make a transition note network diagram.
-#
-# Examples:
-# perl ngram-play --files eg/twinkle-twinkle.mid --size 2 --out '' --image --chan 1
-# perl ngram-play --files ~/Music/MIDI/moonlight.mid --size 3 --min 3 --pause en
-# perl ngram-play --files eg/twinkle-twinkle.mid,~/Music/MIDI/moonlight.mid
-# perl ngram-play --dir ~/Music/MIDI/Bach --size 4 --min 8 --max 64 --shuf
-
 use strict;
 use warnings;
 
@@ -18,6 +8,7 @@ use Getopt::Long;
 use GraphViz2;
 use MIDI::Ngram;
 use Music::Note;
+use Pod::Usage;
 
 # General MIDI patches that are audible and aren't horrible
 my @patches = qw(
@@ -69,7 +60,10 @@ GetOptions( \%opts,
     'chan=i',
     'ranp',
     'patches=s',
-) or die 'Failed GetOptions';
+) or pod2usage(2);
+
+pod2usage(1) if $opts{help};
+pod2usage( -exitval => 0, -verbose => 2 ) if $opts{man};
 
 my @files;
 @files = File::Find::Rule->file()->name('*.mid')->in($opts{dir})
@@ -175,3 +169,26 @@ for my $edge ( keys %{ $mng->dura_note_net->{$opts{chan}} } ) {
 }
 
 $g->run( format => 'png', output_file => $0 . '-duration_note.png' );
+
+__END__
+
+=head1 NAME
+
+ngram-analyze - Analyze and play ngrams of MIDI files
+
+=head1 SYNOPSIS
+
+ perl ngram-play --files eg/twinkle-twinkle.mid --size 2 --out '' --image --chan 1
+ perl ngram-play --files ~/Music/MIDI/moonlight.mid --size 3 --min 3 --pause en
+ perl ngram-play --files eg/twinkle-twinkle.mid,~/Music/MIDI/moonlight.mid
+ perl ngram-play --dir ~/Music/MIDI/Bach --size 4 --min 8 --max 64 --shuf
+
+=head1 DESCRIPTION
+
+Analyze or generate a MIDI file of the top repeated note phrases of a
+list of MIDI files.
+
+This program will also make a transition note network diagrams of the
+note pitches, durations and combination of the two.
+
+=cut
