@@ -26,7 +26,7 @@ my %opts = (
     min     => 2,        # Minimum repetitions to show
     max     => 0,        # Max number of phrases to analyze. 0 for all
     bpm     => 100,      # Beats per minute
-    dura    => undef,    # Note durations
+    dura    => '',       # Note durations
     out     => "$0.mid", # Output MIDI file
     pause   => '',       # Insert a rest after each phrase
     analyze => '',       # Analyze all channels
@@ -71,7 +71,7 @@ my @files;
 
 # Turn string lists into arrayrefs
 $opts{files}   = @files ? \@files : [ split /(?:\s+|\s*,\s*)/, $opts{files} ];
-$opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} || '' ];
+$opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ];
 $opts{analyze} = [ split /(?:\s+|\s*,\s*)/, $opts{analyze} ];
 $opts{patches} = [ split /(?:\s+|\s*,\s*)/, $opts{patches} ];
 
