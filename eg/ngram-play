@@ -4,7 +4,7 @@
 # MIDI files or a directory, and make a transition note network diagram.
 #
 # Examples:
-# perl ngram-play --files eg/twinkle-twinkle.mid --size 2 --out '' --image
+# perl ngram-play --files eg/twinkle-twinkle.mid --size 2 --out '' --image --chan 1
 # perl ngram-play --files ~/Music/MIDI/moonlight.mid --size 3 --min 3 --pause en
 # perl ngram-play --files eg/twinkle-twinkle.mid,~/Music/MIDI/moonlight.mid
 # perl ngram-play --dir ~/Music/MIDI/Bach --size 4 --min 8 --max 64 --shuf
