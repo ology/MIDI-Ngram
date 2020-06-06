@@ -1,7 +1,7 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
-    - Fix eg/ngram-analyze syntax.
+    - Fix eg/ngram-analyze syntax and documentation.
 
 0.1805 2020-06-06 14:11:42
     - Improve eg/ngram-play and rename it to eg/ngram-analyze.
