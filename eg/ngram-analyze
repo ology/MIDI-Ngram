@@ -187,17 +187,18 @@ ngram-analyze - Analyze and play ngrams of MIDI files
 
 =head1 DESCRIPTION
 
-Analyze or generate a MIDI file of the top repeated note phrases of a
-list of MIDI files.
-
-Given the B<--image> option, this program will render PNG transition
-network diagrams of the note pitches, durations and combination of the
-two based on the B<--size> of the ngram and the B<--min> number of
-ngrams to consider.
+Analyze (or generate a MIDI file) of the top repeated note phrases of
+a list of MIDI files given by either of the B<--files> or B<--dir>
+options.
 
 By default, the program creates a MIDI file for playback instead of
 showing the analysis.  To disable this file creation and see the
 analysis instead, set B<--out> to C<''>.
+
+Given the B<--image> option, this program will render PNG transition
+network diagrams of the note pitches, durations and combination of the
+two based on the B<--chan> channel number, B<--size> of the ngram and
+the B<--min> number of ngrams to consider.
 
 Please see L<MIDI::Ngram> for descriptions of the other B<--options>
 available.
