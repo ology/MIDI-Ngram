@@ -1,7 +1,7 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
-    - Improve eg/ngram-play.
+    - Improve eg/ngram-play and rename it to eg/ngram-analyze.
 
 0.1804 2020-06-06 10:18:19
     - Converted the eg MIDI file to 2 channels with Apple Logic (which apparently changes the ppqn).
