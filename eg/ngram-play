@@ -178,17 +178,28 @@ ngram-analyze - Analyze and play ngrams of MIDI files
 
 =head1 SYNOPSIS
 
- perl ngram-play --files eg/twinkle-twinkle.mid --size 2 --out '' --image --chan 1
- perl ngram-play --files ~/Music/MIDI/moonlight.mid --size 3 --min 3 --pause en
- perl ngram-play --files eg/twinkle-twinkle.mid,~/Music/MIDI/moonlight.mid
- perl ngram-play --dir ~/Music/MIDI/Bach --size 4 --min 8 --max 64 --shuf
+ perl ngram-analyze [--options]
+
+ perl ngram-analyze --files eg/twinkle-twinkle.mid --size 2 --out '' --image --chan 1
+ perl ngram-analyze --files ~/Music/MIDI/moonlight.mid --size 3 --min 3 --pause en
+ perl ngram-analyze --files eg/twinkle-twinkle.mid,~/Music/MIDI/moonlight.mid
+ perl ngram-analyze --dir ~/Music/MIDI/Bach --size 4 --min 8 --max 64 --shuf
 
 =head1 DESCRIPTION
 
 Analyze or generate a MIDI file of the top repeated note phrases of a
 list of MIDI files.
 
-This program will also make a transition note network diagrams of the
-note pitches, durations and combination of the two.
+Given the B<--image> option, this program will render PNG transition
+network diagrams of the note pitches, durations and combination of the
+two based on the B<--size> of the ngram and the B<--min> number of
+ngrams to consider.
+
+By default, the program creates a MIDI file for playback instead of
+showing the analysis.  To disable this file creation and see the
+analysis instead, set B<--out> to C<''>.
+
+Please see L<MIDI::Ngram> for descriptions of the other B<--options>
+available.
 
 =cut
