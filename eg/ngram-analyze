@@ -200,7 +200,8 @@ network diagrams of the note pitches, durations and combination of the
 two based on the B<--chan> channel number, B<--size> of the ngram and
 the B<--min> number of ngrams to consider.
 
-Please see L<MIDI::Ngram> for descriptions of the other B<--options>
+Please see the source of this program and L<MIDI::Ngram> for
+descriptions of the other B<--options>
 available.
 
 =cut
