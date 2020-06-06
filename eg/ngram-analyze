@@ -71,7 +71,7 @@ my @files;
 
 # Turn string lists into arrayrefs
 $opts{files}   = @files ? \@files : [ split /(?:\s+|\s*,\s*)/, $opts{files} ];
-$opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ];
+$opts{dura}    = [ split /(?:\s+|\s*,\s*)/, $opts{dura} ] if $opts{dura};
 $opts{analyze} = [ split /(?:\s+|\s*,\s*)/, $opts{analyze} ];
 $opts{patches} = [ split /(?:\s+|\s*,\s*)/, $opts{patches} ];
 
