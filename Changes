@@ -1,6 +1,8 @@
 Revision history for MIDI-Ngram
 
 {{$NEXT}}
+
+0.1806 2020-06-06 16:03:41
     - Fix eg/ngram-analyze syntax and documentation.
 
 0.1805 2020-06-06 14:11:42
