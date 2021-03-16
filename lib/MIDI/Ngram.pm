@@ -2,7 +2,7 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of MIDI files
 
-our $VERSION = '0.1806';
+our $VERSION = '0.1807';
 
 use Moo;
 use strictures 2;
