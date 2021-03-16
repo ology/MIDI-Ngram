@@ -12,7 +12,7 @@ use Carp;
 use Lingua::EN::Ngram;
 use List::Util qw( shuffle uniq );
 use List::Util::WeightedChoice qw( choose_weighted );
-use MIDI::Util;
+use MIDI::Util qw(setup_score set_chan_patch);
 use Music::Note;
 
 =head1 SYNOPSIS
@@ -688,7 +688,7 @@ Add notes to the MIDI score and return the playback notes.
 sub populate {
     my ($self) = @_;
 
-    my $score = MIDI::Util::setup_score( bpm => $self->bpm );
+    my $score = setup_score( bpm => $self->bpm );
     $self->score($score);
 
     my @phrases;
@@ -704,7 +704,7 @@ sub populate {
             my $func = sub {
                 my $patch = $self->random_patch ? $self->_random_patch() : 0;
 
-                MIDI::Util::set_chan_patch( $self->score, $track_chan, $patch );
+                set_chan_patch( $self->score, $track_chan, $patch );
 
                 for my $n ( 1 .. $self->loop ) {
                     my $choice = choose_weighted(
@@ -766,7 +766,7 @@ sub populate {
             my $func = sub {
                 my $patch = $self->random_patch ? $self->_random_patch() : 0;
 
-                MIDI::Util::set_chan_patch( $self->score, $track_chan, $patch);
+                set_chan_patch( $self->score, $track_chan, $patch);
 
                 for my $note ( @all ) {
                     if ( $note eq 'r' ) {
