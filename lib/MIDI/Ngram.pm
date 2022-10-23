@@ -2,18 +2,18 @@ package MIDI::Ngram;
 
 # ABSTRACT: Find the top repeated note phrases of MIDI files
 
-our $VERSION = '0.1807';
+our $VERSION = '0.1808';
+
+use Carp qw(croak);
+use Lingua::EN::Ngram ();
+use List::Util qw( shuffle uniq );
+use List::Util::WeightedChoice qw( choose_weighted );
+use MIDI::Util qw(setup_score set_chan_patch);
+use Music::Note ();
 
 use Moo;
 use strictures 2;
 use namespace::clean;
-
-use Carp;
-use Lingua::EN::Ngram;
-use List::Util qw( shuffle uniq );
-use List::Util::WeightedChoice qw( choose_weighted );
-use MIDI::Util qw(setup_score set_chan_patch);
-use Music::Note;
 
 =head1 SYNOPSIS
 
